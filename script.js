@@ -40,35 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         history: 'weatherApp.history'
     };
 
-    const weatherEmojis = {
-        0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 48: '🌫️',
-        51: '🌦️', 53: '🌦️', 55: '🌦️', 56: '🌧️', 57: '🌧️',
-        61: '🌧️', 63: '🌧️', 65: '🌧️', 66: '🌧️', 67: '🌧️',
-        71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️', 85: '❄️', 86: '❄️',
-        80: '🌧️', 81: '🌧️', 82: '🌧️', 95: '⛈️', 96: '⛈️', 99: '⛈️'
-    };
-
-    const weatherDescriptions = {
-        0: 'Ясно', 1: 'Малооблачно', 2: 'Переменная облачность', 3: 'Пасмурно',
-        45: 'Туман', 48: 'Иней и туман', 51: 'Лёгкая морось', 53: 'Морось', 55: 'Сильная морось',
-        56: 'Ледяная морось', 57: 'Сильная ледяная морось', 61: 'Небольшой дождь', 63: 'Дождь',
-        65: 'Сильный дождь', 66: 'Ледяной дождь', 67: 'Сильный ледяной дождь', 71: 'Небольшой снег',
-        73: 'Снег', 75: 'Сильный снег', 77: 'Снежная крупа', 80: 'Ливень', 81: 'Сильный ливень',
-        82: 'Очень сильный ливень', 85: 'Снежный ливень', 86: 'Сильный снежный ливень',
-        95: 'Гроза', 96: 'Гроза с градом', 99: 'Сильная гроза с градом'
-    };
-
-    const weatherBodyClasses = {
-        0: 'body-weather-clear', 1: 'body-weather-cloudy', 2: 'body-weather-cloudy', 3: 'body-weather-cloudy',
-        45: 'body-weather-cloudy', 48: 'body-weather-cloudy', 51: 'body-weather-rainy', 53: 'body-weather-rainy',
-        55: 'body-weather-rainy', 56: 'body-weather-rainy', 57: 'body-weather-rainy', 61: 'body-weather-rainy',
-        63: 'body-weather-rainy', 65: 'body-weather-rainy', 66: 'body-weather-rainy', 67: 'body-weather-rainy',
-        71: 'body-weather-snowy', 73: 'body-weather-snowy', 75: 'body-weather-snowy', 77: 'body-weather-snowy',
-        80: 'body-weather-rainy', 81: 'body-weather-rainy', 82: 'body-weather-rainy', 85: 'body-weather-snowy',
-        86: 'body-weather-snowy', 95: 'body-weather-stormy', 96: 'body-weather-stormy', 99: 'body-weather-stormy'
-    };
-
-    let useCelsius = getStored(storageKeys.unit, 'c') === 'c';
+    let useCelsius = WeatherCore.getStored(storageKeys.unit, 'c') === 'c';
     let themeMode = getStored(storageKeys.theme, 'auto');
     let favorites = getStored(storageKeys.favorites, []);
     let history = getStored(storageKeys.history, []);
@@ -77,29 +49,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastWeatherCode = null;
 
     function getStored(key, fallback) {
-        try {
-            const value = localStorage.getItem(key);
-            return value ? JSON.parse(value) : fallback;
-        } catch {
-            return fallback;
-        }
+        return WeatherCore.getStored(key, fallback);
     }
 
     function setStored(key, value) {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-        } catch {
-            // Storage can be unavailable in private mode; the app should still work.
-        }
+        WeatherCore.setStored(key, value);
     }
 
     function convertTemp(celsius) {
-        if (celsius === null || celsius === undefined || Number.isNaN(Number(celsius))) return '--';
-        return useCelsius ? Math.round(celsius) : Math.round(celsius * 9 / 5 + 32);
+        return WeatherCore.convertTemp(celsius, useCelsius);
     }
 
     function getTempUnit() {
-        return useCelsius ? '°C' : '°F';
+        return WeatherCore.getTempUnit(useCelsius);
     }
 
     function showElement(element, display = 'block') {
@@ -154,33 +116,18 @@ document.addEventListener('DOMContentLoaded', () => {
         themeMode = mode;
         setStored(storageKeys.theme, mode);
         Object.entries(themeButtons).forEach(([name, button]) => button.classList.toggle('active', name === mode));
-        document.body.classList.toggle('theme-light', mode === 'light' || (mode === 'auto' && shouldUseLightTheme()));
-        document.body.classList.toggle('theme-dark', mode === 'dark' || (mode === 'auto' && !shouldUseLightTheme()));
-    }
-
-    function shouldUseLightTheme() {
-        const hour = new Date().getHours();
-        return hour >= 7 && hour < 20;
+        document.body.classList.toggle('theme-light', mode === 'light' || (mode === 'auto' && WeatherCore.shouldUseLightTheme()));
+        document.body.classList.toggle('theme-dark', mode === 'dark' || (mode === 'auto' && !WeatherCore.shouldUseLightTheme()));
     }
 
     function applyWeatherClass(weatherCode) {
-        Object.values(weatherBodyClasses).forEach(className => document.body.classList.remove(className));
-        document.body.classList.add(weatherBodyClasses[weatherCode] || 'body-weather-clear');
+        Object.values(WeatherCore.weatherBodyClasses).forEach(className => document.body.classList.remove(className));
+        document.body.classList.add(WeatherCore.weatherBodyClasses[weatherCode] || 'body-weather-clear');
         setTheme(themeMode);
     }
 
     function buildAdvice(temp, code, windSpeed) {
-        const rainy = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code);
-        const snowy = [71, 73, 75, 77, 85, 86].includes(code);
-        const stormy = [95, 96, 99].includes(code);
-        if (stormy) return 'Лучше отложить долгую прогулку: возможны гроза, сильный ветер и резкие осадки.';
-        if (snowy) return 'Нужны тёплая обувь, шапка и нескользкая подошва. На улице может быть снежно.';
-        if (rainy) return 'Возьмите зонт или дождевик. Одежда с капюшоном сегодня будет кстати.';
-        if (temp < 0) return 'Очень холодно: тёплая куртка, шарф, перчатки и шапка обязательны.';
-        if (temp < 10) return 'Прохладно: подойдёт куртка, плотные брюки и шарф.';
-        if (temp < 20) return windSpeed > 25 ? 'Комфортно, но ветрено. Лучше взять лёгкую куртку.' : 'Погода мягкая: хватит лёгкой куртки или свитера.';
-        if (temp > 28) return 'Жарко: вода, головной убор и лёгкая одежда помогут чувствовать себя лучше.';
-        return 'Отличная погода для прогулки. Лёгкой одежды достаточно.';
+        return WeatherCore.buildAdvice(temp, code, windSpeed);
     }
 
     function renderMetrics(current) {
@@ -190,8 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
             ['Давление', `${Math.round(current.pressure_msl)} гПа`],
             ['Ветер', `${Math.round(current.wind_speed_10m)} км/ч`],
             ['Порывы', `${Math.round(current.wind_gusts_10m)} км/ч`],
-            ['Обновлено', formatDateTime(current.time)],
-            ['Погода', weatherDescriptions[current.weather_code] || 'Неизвестно'],
+            ['Обновлено', WeatherCore.formatDateTime(current.time)],
+            ['Погода', WeatherCore.weatherDescriptions[current.weather_code] || 'Неизвестно'],
             ['Код', current.weather_code]
         ];
 
@@ -213,9 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
         isOffline ? showElement(offlineBanner) : hideElement(offlineBanner);
 
         const weatherCode = current.weather_code;
-        const emoji = weatherEmojis[weatherCode] || '🌤️';
+        const emoji = WeatherCore.weatherEmojis[weatherCode] || '🌤️';
         locationStatus.textContent = `📍 ${location.name}`;
-        weatherDescription.textContent = weatherDescriptions[weatherCode] || 'Погода обновлена';
+        weatherDescription.textContent = WeatherCore.weatherDescriptions[weatherCode] || 'Погода обновлена';
         currentTemp.textContent = convertTemp(current.temperature_2m);
         currentUnit.textContent = getTempUnit();
         weatherAdvice.textContent = buildAdvice(current.temperature_2m, weatherCode, current.wind_speed_10m);
@@ -239,14 +186,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatDateTime(value) {
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return String(value).replace('T', ' ');
-        return date.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+        return WeatherCore.formatDateTime(value);
     }
 
     function formatHour(value) {
-        const date = new Date(value);
-        return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        return WeatherCore.formatHour(value);
     }
 
     function renderHourlyForecast(hourly) {
@@ -258,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hourlyForecastList.innerHTML = hourly.map(item => `
             <article class="hourly-card" aria-label="${formatHour(item.time)}, ${convertTemp(item.temperature_2m)}${getTempUnit()}">
                 <span class="hourly-time">${formatHour(item.time)}</span>
-                <span class="hourly-emoji">${weatherEmojis[item.weather_code] || '🌤️'}</span>
+                <span class="hourly-emoji">${WeatherCore.weatherEmojis[item.weather_code] || '🌤️'}</span>
                 <span class="hourly-temp">${convertTemp(item.temperature_2m)}${getTempUnit()}</span>
             </article>
         `).join('');
@@ -282,9 +226,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const isToday = date.toDateString() === today;
             const fill = Math.max(18, ((item.temperature_2m_max - minRange) / range) * 100);
             return `
-                <article class="forecast-day ${isToday ? 'forecast-today' : ''}" style="animation-delay:${index * 0.05}s" aria-label="${dayName}, ${weatherDescriptions[item.weather_code] || 'Неизвестно'}">
+                <article class="forecast-day ${isToday ? 'forecast-today' : ''}" style="animation-delay:${index * 0.05}s" aria-label="${dayName}, ${WeatherCore.weatherDescriptions[item.weather_code] || 'Неизвестно'}">
                     <span class="forecast-day-name">${isToday ? 'Сегодня' : dayName}</span>
-                    <span class="forecast-emoji">${weatherEmojis[item.weather_code] || '🌤️'}</span>
+                    <span class="forecast-emoji">${WeatherCore.weatherEmojis[item.weather_code] || '🌤️'}</span>
                     <span class="forecast-temp">${convertTemp(item.temperature_2m_min)} / ${convertTemp(item.temperature_2m_max)}${getTempUnit()}</span>
                     <span class="temp-bar"><span class="temp-bar-fill" style="width:${fill}%"></span></span>
                 </article>
@@ -347,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
             if (!response.ok) throw new Error('Weather request failed');
             const data = await response.json();
-            const snapshot = normalizeForecast(data, location);
+            const snapshot = WeatherCore.normalizeForecast(data, location);
             renderWeather(snapshot);
         } catch (error) {
             console.error(error);
@@ -466,21 +410,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function locationKey(location) {
-        return `${Number(location.latitude).toFixed(3)},${Number(location.longitude).toFixed(3)}`;
-    }
-
     function addToHistory(location) {
-        history = [location, ...history.filter(item => locationKey(item) !== locationKey(location))].slice(0, 8);
+        history = [location, ...history.filter(item => WeatherCore.locationKey(item) !== WeatherCore.locationKey(location))].slice(0, 8);
         setStored(storageKeys.history, history);
         renderChips();
     }
 
     function toggleFavorite() {
         if (!currentLocation) return;
-        const exists = favorites.some(item => locationKey(item) === locationKey(currentLocation));
+        const exists = favorites.some(item => WeatherCore.locationKey(item) === WeatherCore.locationKey(currentLocation));
         favorites = exists
-            ? favorites.filter(item => locationKey(item) !== locationKey(currentLocation))
+            ? favorites.filter(item => WeatherCore.locationKey(item) !== WeatherCore.locationKey(currentLocation))
             : [currentLocation, ...favorites].slice(0, 8);
         setStored(storageKeys.favorites, favorites);
         updateFavoriteButton();
@@ -488,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateFavoriteButton() {
-        const active = currentLocation && favorites.some(item => locationKey(item) === locationKey(currentLocation));
+        const active = currentLocation && favorites.some(item => WeatherCore.locationKey(item) === WeatherCore.locationKey(currentLocation));
         favoriteBtn.textContent = active ? 'В избранном' : 'В избранное';
         favoriteBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
     }

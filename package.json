@@ -1,0 +1,9 @@
+{
+  "name": "weather-companion",
+  "version": "1.0.0",
+  "description": "Weather Companion PWA",
+  "scripts": {
+    "test": "node test/runner.js"
+  },
+  "devDependencies": {}
+}
