@@ -464,42 +464,77 @@ document.addEventListener('DOMContentLoaded', () => {
         const coatColor = temperature < 0 ? '#2563eb' : temperature < 10 ? '#3b82f6' : temperature < 20 ? '#7dd3fc' : '#facc15';
         const pantsColor = temperature >= 20 ? '#22c55e' : '#334155';
         const hatColor = temperature < 0 ? '#b91c1c' : temperature < 10 ? '#1d4ed8' : '#ffffff';
+        const shoeColor = '#1e293b';
+        const skinColor = '#fde8d0';
+        const hairColor = '#4a3728';
+        const eyeColor = '#1e293b';
+        const mouthColor = '#dc2626';
 
-        appendSvg('ellipse', { cx: 100, cy: 258, rx: 54, ry: 10, fill: 'rgba(15, 23, 42, 0.18)' });
-        appendSvg('circle', { cx: 100, cy: 42, r: 22, fill: '#ffdbac' });
-        appendSvg('circle', { cx: 92, cy: 37, r: 3, fill: '#111827' });
-        appendSvg('circle', { cx: 108, cy: 37, r: 3, fill: '#111827' });
-        appendSvg('path', { d: 'M 90 51 Q 100 58 110 51', stroke: '#ef4444', 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' });
+        appendSvg('ellipse', { cx: 100, cy: 262, rx: 50, ry: 8, fill: 'rgba(15, 23, 42, 0.15)' });
+
+        appendSvg('path', { d: 'M 100 18 Q 118 18 120 30 Q 122 42 118 50 Q 112 56 100 56 Q 88 56 82 50 Q 78 42 80 30 Q 82 18 100 18 Z', fill: hairColor });
+
+        appendSvg('ellipse', { cx: 100, cy: 42, rx: 20, ry: 22, fill: skinColor });
+
+        appendSvg('ellipse', { cx: 88, cy: 38, rx: 4, ry: 3, fill: eyeColor });
+        appendSvg('ellipse', { cx: 112, cy: 38, rx: 4, ry: 3, fill: eyeColor });
+        appendSvg('circle', { cx: 89, cy: 37, r: 1.5, fill: '#ffffff' });
+        appendSvg('circle', { cx: 113, cy: 37, r: 1.5, fill: '#ffffff' });
+
+        appendSvg('path', { d: 'M 88 48 Q 94 52 100 50 Q 106 52 112 48', stroke: '#c4756a', 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round' });
+
+        appendSvg('path', { d: 'M 96 54 Q 100 58 104 54', stroke: mouthColor, 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round' });
+
+        appendSvg('path', { d: 'M 78 28 Q 82 22 90 20', stroke: hairColor, 'stroke-width': 2.5, fill: 'none', 'stroke-linecap': 'round' });
+        appendSvg('path', { d: 'M 122 28 Q 118 22 110 20', stroke: hairColor, 'stroke-width': 2.5, fill: 'none', 'stroke-linecap': 'round' });
 
         if (temperature < 15) {
-            appendSvg('rect', { x: 72, y: 16, width: 56, height: temperature < 0 ? 22 : 17, rx: 7, fill: hatColor });
-            if (temperature < 0) appendSvg('circle', { cx: 100, cy: 12, r: 5, fill: '#f87171' });
+            appendSvg('path', { d: 'M 72 14 Q 72 6 100 6 Q 128 6 128 14 L 128 22 Q 128 28 120 28 L 80 28 Q 72 28 72 22 Z', fill: hatColor });
+            if (temperature < 0) {
+                appendSvg('circle', { cx: 100, cy: 8, r: 6, fill: '#f87171' });
+                appendSvg('circle', { cx: 100, cy: 8, r: 3, fill: '#fca5a5' });
+            }
+            appendSvg('path', { d: 'M 76 28 L 72 32 L 128 32 L 124 28 Z', fill: hatColor });
         }
 
-        appendSvg('path', { d: 'M 80 70 Q 70 88 74 140 Q 79 162 100 162 Q 121 162 126 140 Q 130 88 120 70 Z', fill: coatColor });
-        appendSvg('path', { d: 'M 78 88 Q 58 106 54 136', stroke: coatColor, 'stroke-width': 13, fill: 'none', 'stroke-linecap': 'round' });
-        appendSvg('path', { d: 'M 122 88 Q 142 106 146 136', stroke: coatColor, 'stroke-width': 13, fill: 'none', 'stroke-linecap': 'round' });
+        appendSvg('rect', { x: 96, y: 54, width: 8, height: 14, rx: 3, fill: skinColor });
+
+        appendSvg('path', { d: 'M 72 68 Q 68 72 66 80 L 64 155 Q 64 162 72 162 L 128 162 Q 136 162 136 155 L 134 80 Q 132 72 128 68 Z', fill: coatColor });
+
+        appendSvg('path', { d: 'M 72 68 Q 60 78 56 95 L 52 140 Q 50 150 58 150 L 72 148 Q 76 140 74 130 Z', fill: coatColor });
+        appendSvg('path', { d: 'M 128 68 Q 140 78 144 95 L 148 140 Q 150 150 142 150 L 128 148 Q 124 140 126 130 Z', fill: coatColor });
+
+        appendSvg('path', { d: 'M 66 155 Q 64 162 70 165 L 130 165 Q 136 162 134 155', stroke: coatColor, 'stroke-width': 2, fill: 'none' });
 
         if (temperature < 10) {
-            appendSvg('rect', { x: 78, y: 62, width: 45, height: 12, rx: 6, fill: '#fb7185' });
-            appendSvg('rect', { x: 106, y: 68, width: 12, height: 34, rx: 5, fill: '#fb7185' });
+            appendSvg('rect', { x: 76, y: 60, width: 18, height: 10, rx: 5, fill: '#fb7185' });
+            appendSvg('rect', { x: 106, y: 60, width: 18, height: 10, rx: 5, fill: '#fb7185' });
+            appendSvg('circle', { cx: 85, cy: 65, r: 4, fill: '#fb7185' });
+            appendSvg('circle', { cx: 115, cy: 65, r: 4, fill: '#fb7185' });
+        } else {
+            appendSvg('path', { d: 'M 70 70 Q 62 80 58 95', stroke: coatColor, 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round' });
+            appendSvg('path', { d: 'M 130 70 Q 138 80 142 95', stroke: coatColor, 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round' });
         }
 
         if (temperature >= 20) {
-            appendSvg('path', { d: 'M 84 160 L 116 160 L 122 190 L 78 190 Z', fill: pantsColor });
-            appendSvg('path', { d: 'M 86 190 L 82 236', stroke: '#111827', 'stroke-width': 10, 'stroke-linecap': 'round' });
-            appendSvg('path', { d: 'M 114 190 L 118 236', stroke: '#111827', 'stroke-width': 10, 'stroke-linecap': 'round' });
+            appendSvg('path', { d: 'M 78 162 L 96 162 L 92 230 L 74 230 Z', fill: pantsColor });
+            appendSvg('path', { d: 'M 104 162 L 122 162 L 126 230 L 108 230 Z', fill: pantsColor });
         } else {
-            appendSvg('path', { d: 'M 84 160 L 98 160 L 94 238 L 78 238 Z', fill: pantsColor });
-            appendSvg('path', { d: 'M 102 160 L 116 160 L 122 238 L 106 238 Z', fill: pantsColor });
+            appendSvg('path', { d: 'M 78 162 L 98 162 L 94 232 L 74 232 Z', fill: pantsColor });
+            appendSvg('path', { d: 'M 102 162 L 122 162 L 126 232 L 106 232 Z', fill: pantsColor });
         }
 
-        appendSvg('path', { d: 'M 76 238 Q 88 234 96 242 L 96 248 L 72 248 Q 72 242 76 238 Z', fill: '#111827' });
-        appendSvg('path', { d: 'M 104 242 Q 112 234 124 238 Q 128 242 128 248 L 104 248 Z', fill: '#111827' });
+        appendSvg('path', { d: 'M 74 230 Q 80 234 86 230 L 86 238 L 70 238 Q 68 234 74 230 Z', fill: shoeColor });
+        appendSvg('path', { d: 'M 106 230 Q 112 234 118 230 L 118 238 L 102 238 Q 100 234 106 230 Z', fill: shoeColor });
 
         if (isRainy) {
-            appendSvg('path', { d: 'M 48 82 Q 100 28 152 82 Q 128 72 100 82 Q 72 72 48 82 Z', fill: '#38bdf8', stroke: '#0369a1', 'stroke-width': 2 });
-            appendSvg('path', { d: 'M 100 82 L 100 148 Q 100 162 112 158', stroke: '#854d0e', 'stroke-width': 4, fill: 'none', 'stroke-linecap': 'round' });
+            appendSvg('path', { d: 'M 40 70 Q 100 10 160 70 Q 130 58 100 70 Q 70 58 40 70 Z', fill: '#38bdf8', stroke: '#0369a1', 'stroke-width': 1.5 });
+            appendSvg('path', { d: 'M 100 70 L 100 155 Q 100 168 112 164', stroke: '#854d0e', 'stroke-width': 3.5, fill: 'none', 'stroke-linecap': 'round' });
+            for (let i = 0; i < 6; i++) {
+                const rx = 55 + i * 14;
+                const ry = 85 + (i % 2) * 18;
+                appendSvg('path', { d: `M ${rx} ${ry} Q ${rx + 2} ${ry + 6} ${rx} ${ry + 10}`, stroke: '#38bdf8', 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round', opacity: '0.7' });
+            }
         }
 
         function appendSvg(tag, attributes) {
