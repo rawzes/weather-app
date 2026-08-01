@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="theme-color" content="#16213e" />
+    <title>Погодное приложение</title>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="manifest" href="manifest.webmanifest" />
+</head>
+<body>
+    <main class="container">
+        <header class="app-header">
+            <div>
+                <p class="eyebrow">Погода рядом с вами</p>
+                <h1>Небо, одежда и прогноз в одном экране</h1>
+            </div>
+            <div class="theme-toggle" aria-label="Тема оформления">
+                <button id="theme-auto-btn" class="active" type="button">Авто</button>
+                <button id="theme-light-btn" type="button">Светлая</button>
+                <button id="theme-dark-btn" type="button">Тёмная</button>
+            </div>
+        </header>
+
+        <section class="control-panel" aria-label="Поиск и настройки">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Найти город..." autocomplete="off" />
+                <button id="search-btn" type="button">Найти</button>
+            </div>
+            <div class="quick-actions">
+                <button id="refreshBtn" type="button">Обновить</button>
+                <button id="my-location-btn" type="button">Моё местоположение</button>
+                <button id="favorite-btn" type="button" aria-pressed="false">В избранное</button>
+            </div>
+            <div class="unit-row">
+                <div class="unit-toggle" aria-label="Единицы температуры">
+                    <button id="celsius-btn" class="active" type="button">°C</button>
+                    <button id="fahrenheit-btn" type="button">°F</button>
+                </div>
+                <div class="temp-legend" id="temp-legend">
+                    <span class="legend-icon">i</span>
+                    <span class="legend-text">°F = °C × 9/5 + 32</span>
+                </div>
+            </div>
+            <div class="chips-section">
+                <div>
+                    <p class="chips-title">Избранные</p>
+                    <div id="favorites-list" class="chips-list"></div>
+                </div>
+                <div>
+                    <p class="chips-title">История</p>
+                    <div id="history-list" class="chips-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="weather-card" id="weather-card" aria-live="polite">
+            <div id="loading-indicator" class="loading">Загрузка...</div>
+            <div id="error-message" class="error">Ошибка данных. Попробуйте позже.</div>
+            <div id="offline-banner" class="offline-banner">Показаны последние сохранённые данные.</div>
+
+            <div class="hero-weather">
+                <div class="hero-copy">
+                    <div id="location-status" class="location-status">Определяем ваше местоположение...</div>
+                    <div id="weather-description" class="weather-description">Подготовка прогноза</div>
+                    <div class="temperature-row">
+                        <span id="current-temp" class="current-temp">--</span>
+                        <span id="current-unit" class="current-unit">°C</span>
+                    </div>
+                    <p id="weather-advice" class="weather-advice">Совет появится после загрузки погоды.</p>
+                </div>
+                <div class="hero-visual">
+                    <div id="weather-emoji" class="weather-emoji">🌤️</div>
+                    <div id="person-container">
+                        <svg id="person" width="200" height="280" viewBox="0 0 200 280" class="person-svg" aria-label="Рекомендация по одежде" role="img"></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div id="weather-info" class="metrics-grid"></div>
+        </section>
+
+        <section class="forecast-hourly" aria-labelledby="hourly-title">
+            <div class="section-heading">
+                <h2 id="hourly-title">Сегодня по часам</h2>
+                <span id="hourly-indicator" class="loading">Загрузка...</span>
+            </div>
+            <div id="hourly-forecast-list" class="hourly-scroll"></div>
+        </section>
+
+        <section class="forecast-weekly" aria-labelledby="weekly-title">
+            <div class="section-heading">
+                <h2 id="weekly-title">Прогноз на неделю</h2>
+                <span id="forecast-indicator" class="loading">Загрузка прогноза...</span>
+            </div>
+            <div id="error-forecast" class="error">Ошибка прогноза. Проверьте соединение.</div>
+            <div class="forecast-grid" id="weekly-forecast-list"></div>
+        </section>
+    </main>
+    
+    <footer class="app-footer">
+        <div class="footer-brand">
+            <span class="footer-logo" aria-hidden="true">☁</span>
+            <div>
+                <p class="footer-title">Weather Companion</p>
+                <p class="footer-subtitle">Разработчик: <a href="https://github.com/moniister" class="footer-link footer-dev">@moniister</a></p>
+            </div>
+        </div>
+        <div class="footer-links">
+            <a href="https://open-meteo.com/" class="footer-link"><span aria-hidden="true">↗</span> Погодные данные</a>
+            <a href="https://www.openstreetmap.org/" class="footer-link"><span aria-hidden="true">⌖</span> Поиск городов</a>
+        </div>
+        <p class="footer-text">© 2026. Минималистичный прогноз с PWA-режимом, историей поиска и offline-кэшем.</p>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>
