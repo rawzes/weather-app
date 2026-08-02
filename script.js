@@ -494,86 +494,141 @@ document.addEventListener('DOMContentLoaded', () => {
         personSVG.innerHTML = '';
         const ns = 'http://www.w3.org/2000/svg';
         const isRainy = WeatherCore.rainyCodes.includes(weatherCode);
-        const coatColor = temperature < 0 ? '#2563eb' : temperature < 10 ? '#3b82f6' : temperature < 20 ? '#7dd3fc' : '#facc15';
-        const pantsColor = temperature >= 20 ? '#22c55e' : '#334155';
-        const hatColor = temperature < 0 ? '#b91c1c' : temperature < 10 ? '#1d4ed8' : '#ffffff';
-        const shoeColor = '#1e293b';
+        const isSnowy = WeatherCore.snowyCodes.includes(weatherCode);
+        const isHot = temperature >= 28;
+        const isCold = temperature < 10;
+        const isMild = temperature >= 10 && temperature < 20;
+
         const skinColor = '#fde8d0';
-        const hairColor = '#4a3728';
+        const skinShadow = '#eec9a3';
+        const hairColor = '#3e2723';
         const eyeColor = '#1e293b';
-        const mouthColor = '#dc2626';
-
-        appendSvg('ellipse', { cx: 100, cy: 262, rx: 50, ry: 8, fill: 'rgba(15, 23, 42, 0.15)' });
-
-        appendSvg('path', { d: 'M 100 18 Q 118 18 120 30 Q 122 42 118 50 Q 112 56 100 56 Q 88 56 82 50 Q 78 42 80 30 Q 82 18 100 18 Z', fill: hairColor });
-
-        appendSvg('ellipse', { cx: 100, cy: 42, rx: 20, ry: 22, fill: skinColor });
-
-        appendSvg('ellipse', { cx: 88, cy: 38, rx: 4, ry: 3, fill: eyeColor });
-        appendSvg('ellipse', { cx: 112, cy: 38, rx: 4, ry: 3, fill: eyeColor });
-        appendSvg('circle', { cx: 89, cy: 37, r: 1.5, fill: '#ffffff' });
-        appendSvg('circle', { cx: 113, cy: 37, r: 1.5, fill: '#ffffff' });
-
-        appendSvg('path', { d: 'M 88 48 Q 94 52 100 50 Q 106 52 112 48', stroke: '#c4756a', 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round' });
-
-        appendSvg('path', { d: 'M 96 54 Q 100 58 104 54', stroke: mouthColor, 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round' });
-
-        appendSvg('path', { d: 'M 78 28 Q 82 22 90 20', stroke: hairColor, 'stroke-width': 2.5, fill: 'none', 'stroke-linecap': 'round' });
-        appendSvg('path', { d: 'M 122 28 Q 118 22 110 20', stroke: hairColor, 'stroke-width': 2.5, fill: 'none', 'stroke-linecap': 'round' });
-
-        if (temperature < 15) {
-            appendSvg('path', { d: 'M 72 14 Q 72 6 100 6 Q 128 6 128 14 L 128 22 Q 128 28 120 28 L 80 28 Q 72 28 72 22 Z', fill: hatColor });
-            if (temperature < 0) {
-                appendSvg('circle', { cx: 100, cy: 8, r: 6, fill: '#f87171' });
-                appendSvg('circle', { cx: 100, cy: 8, r: 3, fill: '#fca5a5' });
-            }
-            appendSvg('path', { d: 'M 76 28 L 72 32 L 128 32 L 124 28 Z', fill: hatColor });
-        }
-
-        appendSvg('rect', { x: 96, y: 54, width: 8, height: 14, rx: 3, fill: skinColor });
-
-        appendSvg('path', { d: 'M 72 68 Q 68 72 66 80 L 64 155 Q 64 162 72 162 L 128 162 Q 136 162 136 155 L 134 80 Q 132 72 128 68 Z', fill: coatColor });
-
-        appendSvg('path', { d: 'M 72 68 Q 60 78 56 95 L 52 140 Q 50 150 58 150 L 72 148 Q 76 140 74 130 Z', fill: coatColor });
-        appendSvg('path', { d: 'M 128 68 Q 140 78 144 95 L 148 140 Q 150 150 142 150 L 128 148 Q 124 140 126 130 Z', fill: coatColor });
-
-        appendSvg('path', { d: 'M 66 155 Q 64 162 70 165 L 130 165 Q 136 162 134 155', stroke: coatColor, 'stroke-width': 2, fill: 'none' });
-
-        if (temperature < 10) {
-            appendSvg('rect', { x: 76, y: 60, width: 18, height: 10, rx: 5, fill: '#fb7185' });
-            appendSvg('rect', { x: 106, y: 60, width: 18, height: 10, rx: 5, fill: '#fb7185' });
-            appendSvg('circle', { cx: 85, cy: 65, r: 4, fill: '#fb7185' });
-            appendSvg('circle', { cx: 115, cy: 65, r: 4, fill: '#fb7185' });
-        } else {
-            appendSvg('path', { d: 'M 70 70 Q 62 80 58 95', stroke: coatColor, 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round' });
-            appendSvg('path', { d: 'M 130 70 Q 138 80 142 95', stroke: coatColor, 'stroke-width': 8, fill: 'none', 'stroke-linecap': 'round' });
-        }
-
-        if (temperature >= 20) {
-            appendSvg('path', { d: 'M 78 162 L 96 162 L 92 230 L 74 230 Z', fill: pantsColor });
-            appendSvg('path', { d: 'M 104 162 L 122 162 L 126 230 L 108 230 Z', fill: pantsColor });
-        } else {
-            appendSvg('path', { d: 'M 78 162 L 98 162 L 94 232 L 74 232 Z', fill: pantsColor });
-            appendSvg('path', { d: 'M 102 162 L 122 162 L 126 232 L 106 232 Z', fill: pantsColor });
-        }
-
-        appendSvg('path', { d: 'M 74 230 Q 80 234 86 230 L 86 238 L 70 238 Q 68 234 74 230 Z', fill: shoeColor });
-        appendSvg('path', { d: 'M 106 230 Q 112 234 118 230 L 118 238 L 102 238 Q 100 234 106 230 Z', fill: shoeColor });
-
-        if (isRainy) {
-            appendSvg('path', { d: 'M 40 70 Q 100 10 160 70 Q 130 58 100 70 Q 70 58 40 70 Z', fill: '#38bdf8', stroke: '#0369a1', 'stroke-width': 1.5 });
-            appendSvg('path', { d: 'M 100 70 L 100 155 Q 100 168 112 164', stroke: '#854d0e', 'stroke-width': 3.5, fill: 'none', 'stroke-linecap': 'round' });
-            for (let i = 0; i < 6; i++) {
-                const rx = 55 + i * 14;
-                const ry = 85 + (i % 2) * 18;
-                appendSvg('path', { d: `M ${rx} ${ry} Q ${rx + 2} ${ry + 6} ${rx} ${ry + 10}`, stroke: '#38bdf8', 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round', opacity: '0.7' });
-            }
-        }
+        const mouthColor = '#d87373';
+        const shirtColor = temperature < 0 ? '#1e40af' : temperature < 10 ? '#2563eb' : temperature < 20 ? '#0ea5e9' : temperature < 28 ? '#22c55e' : '#f97316';
+        const pantsColor = temperature >= 20 ? '#475569' : '#1e293b';
+        const shoeColor = '#1e293b';
+        const hatColor = temperature < 0 ? '#7f1d1d' : temperature < 10 ? '#1d4ed8' : '#ffffff';
+        const scarfColor = temperature < 5 ? '#dc2626' : temperature < 10 ? '#2563eb' : '#ef4444';
+        const umbrellaColor = '#38bdf8';
+        const umbrellaHandle = '#854d0e';
 
         function appendSvg(tag, attributes) {
             const element = document.createElementNS(ns, tag);
             Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
             personSVG.appendChild(element);
+        }
+
+        function path(d, attrs = {}) {
+            appendSvg('path', { d, ...attrs });
+        }
+
+        function ellipse(cx, cy, rx, ry, attrs = {}) {
+            appendSvg('ellipse', { cx, cy, rx, ry, ...attrs });
+        }
+
+        function circle(cx, cy, r, attrs = {}) {
+            appendSvg('circle', { cx, cy, r, ...attrs });
+        }
+
+        function rect(x, y, w, h, attrs = {}) {
+            appendSvg('rect', { x, y, width: w, height: h, ...attrs });
+        }
+
+        const cx = 100;
+        const headY = 42;
+        const bodyTop = 68;
+        const bodyBottom = 160;
+        const legTop = bodyBottom;
+        const legBottom = 235;
+        const groundY = 245;
+
+        ellipse(cx, groundY, 55, 6, { fill: 'rgba(15, 23, 42, 0.12)' });
+
+        path(`M ${cx - 8} ${legBottom} L ${cx + 8} ${legBottom} L ${cx + 6} ${groundY - 2} L ${cx - 6} ${groundY - 2} Z`, { fill: shoeColor });
+
+        if (temperature >= 20) {
+            path(`M ${cx - 22} ${legTop} L ${cx - 26} ${legBottom} L ${cx - 6} ${legBottom} L ${cx - 10} ${legTop} Z`, { fill: pantsColor });
+            path(`M ${cx + 22} ${legTop} L ${cx + 26} ${legBottom} L ${cx + 6} ${legBottom} L ${cx + 10} ${legTop} Z`, { fill: pantsColor });
+        } else {
+            path(`M ${cx - 20} ${legTop} L ${cx - 26} ${legBottom} L ${cx - 4} ${legBottom} L ${cx - 8} ${legTop} Z`, { fill: pantsColor });
+            path(`M ${cx + 20} ${legTop} L ${cx + 26} ${legBottom} L ${cx + 4} ${legBottom} L ${cx + 8} ${legTop} Z`, { fill: pantsColor });
+        }
+
+        rect(cx - 4, bodyTop - 4, 8, 18, { rx: 4, fill: skinColor });
+
+        path(`M ${cx - 28} ${bodyTop + 8} Q ${cx - 34} ${bodyTop + 18} ${cx - 32} ${bodyTop + 40} L ${cx - 28} ${bodyTop + 140} L ${cx - 8} ${bodyTop + 140} L ${cx - 12} ${bodyTop + 40} Q ${cx - 14} ${bodyTop + 18} ${cx - 8} ${bodyTop + 8} Z`, { fill: shirtColor });
+        path(`M ${cx + 28} ${bodyTop + 8} Q ${cx + 34} ${bodyTop + 18} ${cx + 32} ${bodyTop + 40} L ${cx + 28} ${bodyTop + 140} L ${cx + 8} ${bodyTop + 140} L ${cx + 12} ${bodyTop + 40} Q ${cx + 14} ${bodyTop + 18} ${cx + 8} ${bodyTop + 8} Z`, { fill: shirtColor });
+
+        path(`M ${cx - 28} ${bodyTop + 135} Q ${cx - 32} ${bodyTop + 148} ${cx - 20} ${bodyTop + 150} L ${cx + 20} ${bodyTop + 150} Q ${cx + 32} ${bodyTop + 148} ${cx + 28} ${bodyTop + 135}`, { stroke: shirtColor, 'stroke-width': 3, fill: 'none', 'stroke-linecap': 'round' });
+
+        if (isCold) {
+            path(`M ${cx - 18} ${bodyTop + 18} L ${cx - 24} ${bodyTop + 28} L ${cx - 18} ${bodyTop + 32} L ${cx - 14} ${bodyTop + 24} Z`, { fill: '#fb7185' });
+            path(`M ${cx + 18} ${bodyTop + 18} L ${cx + 24} ${bodyTop + 28} L ${cx + 18} ${bodyTop + 32} L ${cx + 14} ${bodyTop + 24} Z`, { fill: '#fb7185' });
+            circle(cx - 21, bodyTop + 24, 5, { fill: '#fb7185' });
+            circle(cx + 21, bodyTop + 24, 5, { fill: '#fb7185' });
+        } else if (!isHot) {
+            path(`M ${cx - 16} ${bodyTop + 18} Q ${cx - 26} ${bodyTop + 32} ${cx - 28} ${bodyTop + 50}`, { stroke: shirtColor, 'stroke-width': 7, fill: 'none', 'stroke-linecap': 'round' });
+            path(`M ${cx + 16} ${bodyTop + 18} Q ${cx + 26} ${bodyTop + 32} ${cx + 28} ${bodyTop + 50}`, { stroke: shirtColor, 'stroke-width': 7, fill: 'none', 'stroke-linecap': 'round' });
+        }
+
+        if (isCold) {
+            path(`M ${cx - 28} ${bodyTop + 2} Q ${cx - 30} ${bodyTop - 4} ${cx - 20} ${bodyTop - 2} L ${cx - 12} ${bodyTop + 8} L ${cx - 28} ${bodyTop + 14} Z`, { fill: scarfColor });
+            path(`M ${cx + 28} ${bodyTop + 2} Q ${cx + 30} ${bodyTop - 4} ${cx + 20} ${bodyTop - 2} L ${cx + 12} ${bodyTop + 8} L ${cx + 28} ${bodyTop + 14} Z`, { fill: scarfColor });
+            path(`M ${cx - 8} ${bodyTop - 2} Q ${cx} ${bodyTop + 4} ${cx + 8} ${bodyTop - 2}`, { stroke: scarfColor, 'stroke-width': 4, fill: 'none', 'stroke-linecap': 'round' });
+        }
+
+        if (temperature < 15) {
+            path(`M ${cx - 26} ${bodyTop - 18} Q ${cx - 28} ${bodyTop - 28} ${cx - 10} ${bodyTop - 30} L ${cx + 10} ${bodyTop - 30} Q ${cx + 28} ${bodyTop - 28} ${cx + 26} ${bodyTop - 18} L ${cx + 22} ${bodyTop - 6} L ${cx - 22} ${bodyTop - 6} Z`, { fill: hatColor });
+            if (temperature < 0) {
+                circle(cx, bodyTop - 22, 7, { fill: '#f87171' });
+                circle(cx, bodyTop - 22, 4, { fill: '#fca5a5' });
+            }
+            path(`M ${cx - 22} ${bodyTop - 6} L ${cx - 26} ${bodyTop - 2} L ${cx + 26} ${bodyTop - 2} L ${cx + 22} ${bodyTop - 6} Z`, { fill: hatColor });
+        }
+
+        if (isHot) {
+            rect(cx - 14, headY - 2, 28, 6, { rx: 3, fill: '#1e293b', opacity: '0.85' });
+            rect(cx - 10, headY + 2, 20, 4, { rx: 2, fill: '#1e293b', opacity: '0.75' });
+        }
+
+        ellipse(cx, headY + 2, 20, 24, { fill: skinColor });
+
+        path(`M ${cx - 18} ${headY - 16} Q ${cx - 16} ${headY - 26} ${cx - 8} ${headY - 28} Q ${cx} ${headY - 30} ${cx + 8} ${headY - 28} Q ${cx + 16} ${headY - 26} ${cx + 18} ${headY - 16} Q ${cx + 18} ${headY - 8} ${cx + 16} ${headY - 2} L ${cx - 16} ${headY - 2} Q ${cx - 18} ${headY - 8} ${cx - 18} ${headY - 16} Z`, { fill: hairColor });
+
+        path(`M ${cx - 18} ${headY - 12} Q ${cx - 14} ${headY - 22} ${cx - 4} ${headY - 24}`, { stroke: hairColor, 'stroke-width': 3, fill: 'none', 'stroke-linecap': 'round' });
+        path(`M ${cx + 16} ${headY - 10} Q ${cx + 12} ${headY - 20} ${cx + 4} ${headY - 22}`, { stroke: hairColor, 'stroke-width': 3, fill: 'none', 'stroke-linecap': 'round' });
+
+        ellipse(cx - 7, headY + 2, 4.5, 3.5, { fill: '#ffffff' });
+        ellipse(cx + 7, headY + 2, 4.5, 3.5, { fill: '#ffffff' });
+        ellipse(cx - 7, headY + 3, 2.5, 2.5, { fill: eyeColor });
+        ellipse(cx + 7, headY + 3, 2.5, 2.5, { fill: eyeColor });
+        circle(cx - 6, headY + 2, 1.2, { fill: '#ffffff' });
+        circle(cx + 8, headY + 2, 1.2, { fill: '#ffffff' });
+
+        path(`M ${cx - 10} ${headY - 4} Q ${cx - 6} ${headY - 8} ${cx - 2} ${headY - 5}`, { stroke: hairColor, 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' });
+        path(`M ${cx + 10} ${headY - 4} Q ${cx + 6} ${headY - 8} ${cx + 2} ${headY - 5}`, { stroke: hairColor, 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' });
+
+        path(`M ${cx - 4} ${headY + 8} Q ${cx} ${headY + 10} ${cx + 4} ${headY + 8}`, { stroke: '#c4756a', 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round' });
+        path(`M ${cx - 2} ${headY + 13} Q ${cx} ${headY + 16} ${cx + 2} ${headY + 13}`, { stroke: mouthColor, 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' });
+
+        if (isRainy) {
+            const umbrellaY = bodyTop - 38;
+            path(`M ${cx - 36} ${umbrellaY} Q ${cx} ${umbrellaY - 28} ${cx + 36} ${umbrellaY} Q ${cx + 30} ${umbrellaY + 6} ${cx} ${umbrellaY + 6} Q ${cx - 30} ${umbrellaY + 6} ${cx - 36} ${umbrellaY} Z`, { fill: umbrellaColor, stroke: '#0284c7', 'stroke-width': 1.5 });
+            path(`M ${cx} ${umbrellaY + 6} L ${cx} ${bodyTop - 2}`, { stroke: umbrellaHandle, 'stroke-width': 3, 'stroke-linecap': 'round' });
+            path(`M ${cx - 24} ${umbrellaY + 4} Q ${cx - 22} ${umbrellaY + 12} ${cx - 24} ${umbrellaY + 18}`, { stroke: umbrellaColor, 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round', opacity: '0.8' });
+            path(`M ${cx - 8} ${umbrellaY + 4} Q ${cx - 6} ${umbrellaY + 14} ${cx - 8} ${umbrellaY + 20}`, { stroke: umbrellaColor, 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round', opacity: '0.8' });
+            path(`M ${cx + 8} ${umbrellaY + 4} Q ${cx + 10} ${umbrellaY + 14} ${cx + 8} ${umbrellaY + 20}`, { stroke: umbrellaColor, 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round', opacity: '0.8' });
+            path(`M ${cx + 24} ${umbrellaY + 4} Q ${cx + 26} ${umbrellaY + 12} ${cx + 24} ${umbrellaY + 18}`, { stroke: umbrellaColor, 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round', opacity: '0.8' });
+        }
+
+        if (isSnowy) {
+            const snowY = bodyTop - 30;
+            for (let i = 0; i < 5; i++) {
+                const sx = cx - 30 + i * 15;
+                const sy = snowY + (i % 2) * 12;
+                circle(sx, sy, 2.5, { fill: '#ffffff', opacity: '0.9' });
+            }
+            path(`M ${cx - 20} ${snowY + 30} Q ${cx} ${snowY + 22} ${cx + 20} ${snowY + 30} Q ${cx + 14} ${snowY + 36} ${cx} ${snowY + 36} Q ${cx - 14} ${snowY + 36} ${cx - 20} ${snowY + 30} Z`, { fill: '#ffffff', opacity: '0.85' });
         }
     }
 
