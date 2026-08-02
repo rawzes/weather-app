@@ -12,13 +12,34 @@ var WeatherCore = (function () {
     };
 
     const weatherDescriptionsRaw = {
-        0: 'Ясно', 1: 'Малооблачно', 2: 'Переменная облачность', 3: 'Пасмурно',
-        45: 'Туман', 48: 'Иней и туман', 51: 'Лёгкая морось', 53: 'Морось', 55: 'Сильная морось',
-        56: 'Ледяная морось', 57: 'Сильная ледяная морось', 61: 'Небольшой дождь', 63: 'Дождь',
-        65: 'Сильный дождь', 66: 'Ледяной дождь', 67: 'Сильный ледяной дождь', 71: 'Небольшой снег',
-        73: 'Снег', 75: 'Сильный снег', 77: 'Снежная крупа', 80: 'Ливень', 81: 'Сильный ливень',
-        82: 'Очень сильный ливень', 85: 'Снежный ливень', 86: 'Сильный снежный ливень',
-        95: 'Гроза', 96: 'Гроза с градом', 99: 'Сильная гроза с градом'
+        0: { ru: 'Ясно', en: 'Clear' },
+        1: { ru: 'Малооблачно', en: 'Mainly clear' },
+        2: { ru: 'Переменная облачность', en: 'Partly cloudy' },
+        3: { ru: 'Пасмурно', en: 'Overcast' },
+        45: { ru: 'Туман', en: 'Fog' },
+        48: { ru: 'Иней и туман', en: 'Depositing rime fog' },
+        51: { ru: 'Лёгкая морось', en: 'Light drizzle' },
+        53: { ru: 'Морось', en: 'Moderate drizzle' },
+        55: { ru: 'Сильная морось', en: 'Dense drizzle' },
+        56: { ru: 'Ледяная морось', en: 'Light freezing drizzle' },
+        57: { ru: 'Сильная ледяная морось', en: 'Dense freezing drizzle' },
+        61: { ru: 'Небольшой дождь', en: 'Slight rain' },
+        63: { ru: 'Дождь', en: 'Moderate rain' },
+        65: { ru: 'Сильный дождь', en: 'Heavy rain' },
+        66: { ru: 'Ледяной дождь', en: 'Light freezing rain' },
+        67: { ru: 'Сильный ледяной дождь', en: 'Heavy freezing rain' },
+        71: { ru: 'Небольшой снег', en: 'Slight snow fall' },
+        73: { ru: 'Снег', en: 'Moderate snow fall' },
+        75: { ru: 'Сильный снег', en: 'Heavy snow fall' },
+        77: { ru: 'Снежная крупа', en: 'Snow grains' },
+        80: { ru: 'Ливень', en: 'Slight rain showers' },
+        81: { ru: 'Сильный ливень', en: 'Moderate rain showers' },
+        82: { ru: 'Очень сильный ливень', en: 'Violent rain showers' },
+        85: { ru: 'Снежный ливень', en: 'Slight snow showers' },
+        86: { ru: 'Сильный снежный ливень', en: 'Heavy snow showers' },
+        95: { ru: 'Гроза', en: 'Thunderstorm' },
+        96: { ru: 'Гроза с градом', en: 'Thunderstorm with slight hail' },
+        99: { ru: 'Сильная гроза с градом', en: 'Thunderstorm with heavy hail' }
     };
 
     const weatherBodyClasses = {
@@ -103,11 +124,25 @@ var WeatherCore = (function () {
         footerTitle: { ru: 'Weather Companion', en: 'Weather Companion' },
         footerSubtitle: { ru: 'Разработчик: ', en: 'Developer: ' },
         footerText: { ru: '© 2026. Минималистичный прогноз с PWA-режимом, историей поиска и offline-кэшем.', en: '© 2026. Minimal forecast with PWA mode, search history and offline cache.' },
+        skipLink: { ru: 'Перейти к погоде', en: 'Skip to weather' },
+        searchLabel: { ru: 'Найти город', en: 'Search city' },
+        themeAuto: { ru: 'Авто', en: 'Auto' },
+        themeLight: { ru: 'Светлая', en: 'Light' },
+        themeDark: { ru: 'Тёмная', en: 'Dark' },
+        langRu: { ru: 'РУ', en: 'EN' },
+        langEn: { ru: 'РУ', en: 'EN' },
+        themeLabel: { ru: 'Тема оформления', en: 'Theme' },
+        langLabel: { ru: 'Язык', en: 'Language' },
+        unitToggleLabel: { ru: 'Единицы температуры', en: 'Temperature units' },
+        controlPanelLabel: { ru: 'Поиск и настройки', en: 'Search and settings' },
+        pressureUnit: { ru: 'гПа', en: 'hPa' },
+        windUnit: { ru: 'км/ч', en: 'km/h' },
+        currentLocation: { ru: 'Текущее местоположение', en: 'Current location' },
+        moscowFallback: { ru: 'Москва', en: 'Moscow' },
+        clothingAdvice: { ru: 'Рекомендация по одежде', en: 'Clothing recommendation' },
         footerWeatherData: { ru: 'Погодные данные', en: 'Weather data' },
         footerMapData: { ru: 'Поиск городов', en: 'City search' },
         tryAnotherQuery: { ru: 'Попробуйте другой запрос', en: 'Try another query' },
-        preparingForecast: { ru: 'Подготовка прогноза', en: 'Preparing forecast' },
-        unknownErrorGeolocation: { ru: 'Неизвестная ошибка геолокации.', en: 'Unknown geolocation error.' },
         feelsLikeRange: { ru: 'Ощущается: ', en: 'Feels like: ' },
         today: { ru: 'Сегодня', en: 'Today' },
         weatherUnknown: { ru: 'Неизвестно', en: 'Unknown' }
@@ -383,7 +418,9 @@ var WeatherCore = (function () {
     }
 
     function weatherDescription(code) {
-        return weatherDescriptionsRaw[code] || (currentLang === 'en' ? 'Unknown' : 'Неизвестно');
+        const desc = weatherDescriptionsRaw[code];
+        if (!desc) return currentLang === 'en' ? 'Unknown' : 'Неизвестно';
+        return typeof desc === 'string' ? desc : desc[currentLang] || desc['ru'];
     }
 
     return {

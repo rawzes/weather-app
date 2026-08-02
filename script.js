@@ -544,7 +544,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ellipse(cx, groundY, 55, 6, { fill: 'rgba(15, 23, 42, 0.12)' });
 
-        path(`M ${cx - 8} ${legBottom} L ${cx + 8} ${legBottom} L ${cx + 6} ${groundY - 2} L ${cx - 6} ${groundY - 2} Z`, { fill: shoeColor });
+        if (temperature < 0) {
+            path(`M ${cx - 8} ${legBottom} L ${cx + 8} ${legBottom} L ${cx + 6} ${groundY - 2} L ${cx - 6} ${groundY - 2} Z`, { fill: '#1e3a5f' });
+            path(`M ${cx - 10} ${legBottom + 2} L ${cx + 10} ${legBottom + 2} L ${cx + 8} ${groundY} L ${cx - 8} ${groundY} Z`, { fill: '#2d4a6f' });
+        } else if (temperature < 10) {
+            path(`M ${cx - 8} ${legBottom} L ${cx + 8} ${legBottom} L ${cx + 6} ${groundY - 2} L ${cx - 6} ${groundY - 2} Z`, { fill: shoeColor });
+            path(`M ${cx - 10} ${legBottom + 2} L ${cx + 10} ${legBottom + 2} L ${cx + 8} ${groundY} L ${cx - 8} ${groundY} Z`, { fill: '#2d3748' });
+        } else if (temperature >= 20) {
+            path(`M ${cx - 8} ${legBottom} L ${cx + 8} ${legBottom} L ${cx + 6} ${groundY - 2} L ${cx - 6} ${groundY - 2} Z`, { fill: shoeColor });
+            path(`M ${cx - 10} ${legBottom + 2} L ${cx + 10} ${legBottom + 2} L ${cx + 8} ${groundY} L ${cx - 8} ${groundY} Z`, { fill: '#334155' });
+        } else {
+            path(`M ${cx - 8} ${legBottom} L ${cx + 8} ${legBottom} L ${cx + 6} ${groundY - 2} L ${cx - 6} ${groundY - 2} Z`, { fill: shoeColor });
+            path(`M ${cx - 10} ${legBottom + 2} L ${cx + 10} ${legBottom + 2} L ${cx + 8} ${groundY} L ${cx - 8} ${groundY} Z`, { fill: '#475569' });
+        }
 
         if (temperature >= 20) {
             path(`M ${cx - 22} ${legTop} L ${cx - 26} ${legBottom} L ${cx - 6} ${legBottom} L ${cx - 10} ${legTop} Z`, { fill: pantsColor });
@@ -554,7 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
             path(`M ${cx + 20} ${legTop} L ${cx + 26} ${legBottom} L ${cx + 4} ${legBottom} L ${cx + 8} ${legTop} Z`, { fill: pantsColor });
         }
 
-        rect(cx - 4, bodyTop - 4, 8, 18, { rx: 4, fill: skinColor });
+        rect(cx - 3, bodyTop - 2, 6, 10, { rx: 3, fill: skinColor });
 
         path(`M ${cx - 28} ${bodyTop + 8} Q ${cx - 34} ${bodyTop + 18} ${cx - 32} ${bodyTop + 40} L ${cx - 28} ${bodyTop + 140} L ${cx - 8} ${bodyTop + 140} L ${cx - 12} ${bodyTop + 40} Q ${cx - 14} ${bodyTop + 18} ${cx - 8} ${bodyTop + 8} Z`, { fill: shirtColor });
         path(`M ${cx + 28} ${bodyTop + 8} Q ${cx + 34} ${bodyTop + 18} ${cx + 32} ${bodyTop + 40} L ${cx + 28} ${bodyTop + 140} L ${cx + 8} ${bodyTop + 140} L ${cx + 12} ${bodyTop + 40} Q ${cx + 14} ${bodyTop + 18} ${cx + 8} ${bodyTop + 8} Z`, { fill: shirtColor });

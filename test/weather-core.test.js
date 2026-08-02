@@ -16,12 +16,14 @@ module.exports = function (WeatherCore, assert, { describe, it }) {
             assert.equal(WeatherCore.weatherEmojis[95], '⛈️');
         });
 
-        it('weatherDescriptions maps clear sky code 0 to Ясно', () => {
-            assert.equal(WeatherCore.weatherDescriptions[0], 'Ясно');
+        it('weatherDescriptions maps clear sky code 0 to Ясно (ru) and Clear (en)', () => {
+            assert.equal(WeatherCore.weatherDescriptions[0].ru, 'Ясно');
+            assert.equal(WeatherCore.weatherDescriptions[0].en, 'Clear');
         });
 
-        it('weatherDescriptions maps rain code 63 to Дождь', () => {
-            assert.equal(WeatherCore.weatherDescriptions[63], 'Дождь');
+        it('weatherDescriptions maps rain code 63 to Дождь (ru) and Moderate rain (en)', () => {
+            assert.equal(WeatherCore.weatherDescriptions[63].ru, 'Дождь');
+            assert.equal(WeatherCore.weatherDescriptions[63].en, 'Moderate rain');
         });
 
         it('weatherBodyClasses maps clear sky code 0 to body-weather-clear', () => {

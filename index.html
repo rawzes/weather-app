@@ -10,7 +10,7 @@
     <link rel="manifest" href="manifest.webmanifest" />
 </head>
 <body>
-    <a href="#weather-card" class="skip-link">Перейти к погоде</a>
+    <a href="#weather-card" class="skip-link" data-i18n="skipLink">Перейти к погоде</a>
     <main class="container">
         <header class="app-header">
             <div>
@@ -19,20 +19,20 @@
             </div>
             <div class="theme-lang-group">
                 <div class="theme-toggle" aria-label="Тема оформления">
-                    <button id="theme-auto-btn" class="active" type="button">Авто</button>
-                    <button id="theme-light-btn" type="button">Светлая</button>
-                    <button id="theme-dark-btn" type="button">Тёмная</button>
+                    <button id="theme-auto-btn" class="active" type="button" data-i18n="themeAuto">Авто</button>
+                    <button id="theme-light-btn" type="button" data-i18n="themeLight">Светлая</button>
+                    <button id="theme-dark-btn" type="button" data-i18n="themeDark">Тёмная</button>
                 </div>
                 <div class="lang-toggle" aria-label="Язык интерфейса">
-                    <button id="lang-ru-btn" class="active" type="button" aria-pressed="true">RU</button>
-                    <button id="lang-en-btn" type="button" aria-pressed="false">EN</button>
+                    <button id="lang-ru-btn" class="active" type="button" aria-pressed="true" data-i18n="langRu">РУ</button>
+                    <button id="lang-en-btn" type="button" aria-pressed="false" data-i18n="langEn">EN</button>
                 </div>
             </div>
         </header>
 
         <section class="control-panel" aria-label="Поиск и настройки">
             <div class="search-container">
-                <label for="search-input" class="sr-only">Найти город</label>
+                <label for="search-input" class="sr-only" data-i18n="searchLabel">Найти город</label>
                 <input type="text" id="search-input" placeholder="Найти город..." autocomplete="off" />
                 <button id="search-btn" type="button" data-i18n="searchBtn">Найти</button>
             </div>
