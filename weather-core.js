@@ -142,6 +142,7 @@ var WeatherCore = (function () {
         clothingAdvice: { ru: 'Рекомендация по одежде', en: 'Clothing recommendation' },
         footerWeatherData: { ru: 'Погодные данные', en: 'Weather data' },
         footerMapData: { ru: 'Поиск городов', en: 'City search' },
+        footerPhotoData: { ru: 'Фотографии персонажа', en: 'Character photos' },
         tryAnotherQuery: { ru: 'Попробуйте другой запрос', en: 'Try another query' },
         feelsLikeRange: { ru: 'Ощущается: ', en: 'Feels like: ' },
         today: { ru: 'Сегодня', en: 'Today' },

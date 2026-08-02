@@ -493,16 +493,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const isRainy = WeatherCore.rainyCodes.includes(weatherCode);
         const isSnowy = WeatherCore.snowyCodes.includes(weatherCode);
         const photo = isRainy
-            ? { query: 'person,rain,umbrella', lock: 1 }
+            ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Walking_alone_in_the_Rain_with_Umbrella.jpg/500px-Walking_alone_in_the_Rain_with_Umbrella.jpg'
             : isSnowy
-                ? { query: 'person,winter,snow', lock: 2 }
+                ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Frozen_%28Unsplash%29.jpg/500px-Frozen_%28Unsplash%29.jpg'
                 : temperature < 10
-                    ? { query: 'person,winter,coat', lock: 3 }
+                    ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Bundled_Up_%28Unsplash%29.jpg/500px-Bundled_Up_%28Unsplash%29.jpg'
                     : temperature >= 28
-                        ? { query: 'person,summer,sunglasses', lock: 4 }
-                        : { query: 'person,outdoor,weather', lock: 5 };
+                        ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/412_DSP_BoldVACoastSurvey_122_-_DPLA_-_df06db2ed740b8f36045f23e338636b6.jpg/500px-412_DSP_BoldVACoastSurvey_122_-_DPLA_-_df06db2ed740b8f36045f23e338636b6.jpg'
+                        : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Street_vendor_carrying_packaged_groundnut_snacks_in_a_basket%2C_Arusha%2C_Tanzania.jpg/500px-Street_vendor_carrying_packaged_groundnut_snacks_in_a_basket%2C_Arusha%2C_Tanzania.jpg';
 
-        const nextSrc = `https://loremflickr.com/480/640/${photo.query}?lock=${photo.lock}`;
         personImage.classList.add('is-loading');
         personImage.classList.remove('is-unavailable');
         personImage.alt = t('clothingAdvice');
@@ -514,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
             personImage.classList.add('is-unavailable');
         };
 
-        if (personImage.src !== nextSrc) personImage.src = nextSrc;
+        if (personImage.src !== photo) personImage.src = photo;
     }
 
     searchBtn.addEventListener('click', () => searchByCity(searchInput.value.trim()));
