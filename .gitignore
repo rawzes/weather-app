@@ -34,9 +34,6 @@ coverage/
 # Local agent configuration
 .kilo/
 
-# GitHub Actions workflows
-.github/workflows/
-
 # OS files
 .DS_Store
 Thumbs.db
