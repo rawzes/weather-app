@@ -573,7 +573,12 @@ a:focus-visible,
     height: 100%;
     display: block;
     object-fit: cover;
-    object-position: 58% center;
+    object-position: center;
+}
+
+.person-photo-fallback {
+    padding: 26%;
+    object-fit: contain;
 }
 
 .metrics-grid {

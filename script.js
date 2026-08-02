@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             weatherEmoji.textContent = emoji;
         }
         lastWeatherCode = weatherCode;
-        updatePerson(current.temperature_2m, weatherCode);
+        updatePerson();
     }
 
     function formatDateTime(value) {
@@ -492,6 +492,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function updatePerson() {
         personImage.alt = t('clothingAdvice');
     }
+
+    personImage.addEventListener('error', () => {
+        if (!personImage.src.endsWith('/icon.svg')) {
+            personImage.src = 'icon.svg';
+            personImage.classList.add('person-photo-fallback');
+        }
+    });
 
     searchBtn.addEventListener('click', () => searchByCity(searchInput.value.trim()));
     searchInput.addEventListener('keydown', event => {
