@@ -359,4 +359,264 @@ module.exports = function (WeatherCore, assert, { describe, it }) {
             assert.equal(WeatherCore.locationKey(loc1) !== WeatherCore.locationKey(loc2), true);
         });
     });
+
+    describe('WeatherCore — moonPhaseEmoji', () => {
+        it('returns new moon emoji for 0', () => {
+            assert.equal(WeatherCore.moonPhaseEmoji(0), '🌑');
+        });
+
+        it('returns full moon emoji for 0.5', () => {
+            assert.equal(WeatherCore.moonPhaseEmoji(0.5), '🌕');
+        });
+
+        it('returns empty string for null', () => {
+            assert.equal(WeatherCore.moonPhaseEmoji(null), '');
+        });
+
+        it('returns empty string for undefined', () => {
+            assert.equal(WeatherCore.moonPhaseEmoji(undefined), '');
+        });
+    });
+
+    describe('WeatherCore — moonPhaseLabel', () => {
+        it('returns Новолуние for 0', () => {
+            assert.equal(WeatherCore.moonPhaseLabel(0), 'Новолуние');
+        });
+
+        it('returns Полнолуние for 0.5', () => {
+            assert.equal(WeatherCore.moonPhaseLabel(0.5), 'Полнолуние');
+        });
+
+        it('returns -- for null', () => {
+            assert.equal(WeatherCore.moonPhaseLabel(null), '--');
+        });
+
+        it('returns -- for undefined', () => {
+            assert.equal(WeatherCore.moonPhaseLabel(undefined), '--');
+        });
+    });
+
+    describe('WeatherCore — describeWindDir', () => {
+        it('returns С for 0 degrees', () => {
+            assert.equal(WeatherCore.describeWindDir(0), 'С');
+        });
+
+        it('returns В for 90 degrees', () => {
+            assert.equal(WeatherCore.describeWindDir(90), 'В');
+        });
+
+        it('returns Ю for 180 degrees', () => {
+            assert.equal(WeatherCore.describeWindDir(180), 'Ю');
+        });
+
+        it('returns З for 270 degrees', () => {
+            assert.equal(WeatherCore.describeWindDir(270), 'З');
+        });
+
+        it('returns СВ for 45 degrees', () => {
+            assert.equal(WeatherCore.describeWindDir(45), 'СВ');
+        });
+
+        it('returns -- for null', () => {
+            assert.equal(WeatherCore.describeWindDir(null), '--');
+        });
+
+        it('returns -- for undefined', () => {
+            assert.equal(WeatherCore.describeWindDir(undefined), '--');
+        });
+    });
+
+    describe('WeatherCore — uvAdviceSeverity', () => {
+        it('returns null for null uv', () => {
+            assert.equal(WeatherCore.uvAdviceSeverity(null), null);
+        });
+
+        it('returns Экстремальный for uv >= 11', () => {
+            const result = WeatherCore.uvAdviceSeverity(11);
+            assert.equal(result.level, 'Экстремальный');
+        });
+
+        it('returns Очень высокий for uv >= 8', () => {
+            const result = WeatherCore.uvAdviceSeverity(8);
+            assert.equal(result.level, 'Очень высокий');
+        });
+
+        it('returns Высокий for uv >= 6', () => {
+            const result = WeatherCore.uvAdviceSeverity(6);
+            assert.equal(result.level, 'Высокий');
+        });
+
+        it('returns Умеренный for uv >= 3', () => {
+            const result = WeatherCore.uvAdviceSeverity(3);
+            assert.equal(result.level, 'Умеренный');
+        });
+
+        it('returns Низкий for uv < 3', () => {
+            const result = WeatherCore.uvAdviceSeverity(2);
+            assert.equal(result.level, 'Низкий');
+        });
+    });
+
+    describe('WeatherCore — perceivedComfort', () => {
+        it('returns Морозная for temp < 0', () => {
+            assert.equal(WeatherCore.perceivedComfort(-5, 50, 10), 'Морозная');
+        });
+
+        it('returns Холодная for temp 0-9', () => {
+            assert.equal(WeatherCore.perceivedComfort(5, 50, 10), 'Холодная');
+        });
+
+        it('returns Прохладная for temp 10-19', () => {
+            assert.equal(WeatherCore.perceivedComfort(15, 50, 10), 'Прохладная');
+        });
+
+        it('returns Комфортная for temp 20-27', () => {
+            assert.equal(WeatherCore.perceivedComfort(22, 50, 10), 'Комфортная');
+        });
+
+        it('returns Тёплая for temp >= 28', () => {
+            assert.equal(WeatherCore.perceivedComfort(30, 50, 10), 'Тёплая');
+        });
+
+        it('returns -- for null temp', () => {
+            assert.equal(WeatherCore.perceivedComfort(null, 50, 10), '--');
+        });
+    });
+
+    describe('WeatherCore — describeDewPoint', () => {
+        it('returns Очень сухо for dew point < 0', () => {
+            assert.equal(WeatherCore.describeDewPoint(-5), 'Очень сухо');
+        });
+
+        it('returns Сухо for dew point 0-9', () => {
+            assert.equal(WeatherCore.describeDewPoint(5), 'Сухо');
+        });
+
+        it('returns Комфортно for dew point 10-14', () => {
+            assert.equal(WeatherCore.describeDewPoint(12), 'Комфортно');
+        });
+
+        it('returns Влажно for dew point 15-19', () => {
+            assert.equal(WeatherCore.describeDewPoint(17), 'Влажно');
+        });
+
+        it('returns Очень влажно for dew point >= 20', () => {
+            assert.equal(WeatherCore.describeDewPoint(22), 'Очень влажно');
+        });
+
+        it('returns -- for null', () => {
+            assert.equal(WeatherCore.describeDewPoint(null), '--');
+        });
+    });
+
+    describe('WeatherCore — parseDailyExtras', () => {
+        it('returns empty array for day without extras', () => {
+            const result = WeatherCore.parseDailyExtras({ time: '2024-01-15' });
+            assert.equal(result.length, 0);
+        });
+
+        it('includes sunrise and sunset when present', () => {
+            const day = { time: '2024-01-15', sunrise: '2024-01-15T07:00', sunset: '2024-01-15T17:00' };
+            const result = WeatherCore.parseDailyExtras(day);
+            assert.equal(result.length >= 2, true);
+            assert.equal(result[0].icon, '🌅');
+            assert.equal(result[1].icon, '🌇');
+        });
+
+        it('includes UV when present', () => {
+            const day = { time: '2024-01-15', uv_index_max: 5 };
+            const result = WeatherCore.parseDailyExtras(day);
+            assert.arrayContains(result.map(r => r.icon), '☀️');
+        });
+
+        it('includes moon phase when present', () => {
+            const day = { time: '2024-01-15', moon_phase: 0.5 };
+            const result = WeatherCore.parseDailyExtras(day);
+            assert.arrayContains(result.map(r => r.icon), '🌕');
+        });
+
+        it('includes wind direction when present', () => {
+            const day = { time: '2024-01-15', wind_direction_10m_dominant: 90 };
+            const result = WeatherCore.parseDailyExtras(day);
+            assert.arrayContains(result.map(r => r.text), 'В');
+        });
+    });
+
+    describe('WeatherCore — buildAdvice UV branch', () => {
+        it('returns UV advice for high UV when temp is pleasant', () => {
+            assert.equal(WeatherCore.buildAdvice(22, 0, 10, 6), 'Наденьте головной убор и солнцезащитные очки. Используйте крем.');
+        });
+
+        it('returns storm advice instead of UV advice for stormy codes', () => {
+            assert.equal(WeatherCore.buildAdvice(22, 95, 10, 8), 'Лучше отложить долгую прогулку: возможны гроза, сильный ветер и резкие осадки.');
+        });
+
+        it('returns pleasant advice when UV is low', () => {
+            assert.equal(WeatherCore.buildAdvice(22, 0, 10, 2), 'Отличная погода для прогулки. Лёгкой одежды достаточно.');
+        });
+
+        it('returns null-safe pleasant advice when uvIndex is undefined', () => {
+            assert.equal(WeatherCore.buildAdvice(22, 0, 10, undefined), 'Отличная погода для прогулки. Лёгкой одежды достаточно.');
+        });
+    });
+
+    describe('WeatherCore — normalizeForecast new fields', () => {
+        it('passes through hourly precipitation_probability', () => {
+            const now = new Date();
+            const future = new Date(now.getTime() + 3600000).toISOString();
+            const data = {
+                current: { temperature_2m: 20, weather_code: 0 },
+                hourly: { time: [future], temperature_2m: [22], weather_code: [0], precipitation_probability: [50], wind_direction_10m: [90], uv_index: [3], dew_point_2m: [10] },
+                daily: { time: [], weather_code: [], temperature_2m_min: [], temperature_2m_max: [] }
+            };
+            const result = WeatherCore.normalizeForecast(data, { name: 'Test', latitude: 0, longitude: 0 });
+            assert.equal(result.hourly[0].precipitation_probability, 50);
+            assert.equal(result.hourly[0].wind_direction_10m, 90);
+            assert.equal(result.hourly[0].uv_index, 3);
+            assert.equal(result.hourly[0].dew_point_2m, 10);
+        });
+
+        it('passes through daily extras', () => {
+            const now = new Date();
+            const time = new Date(now.getTime() + 86400000).toISOString().split('T')[0];
+            const data = {
+                current: { temperature_2m: 20, weather_code: 0 },
+                hourly: { time: [], temperature_2m: [], weather_code: [] },
+                daily: {
+                    time: [time],
+                    weather_code: [0],
+                    temperature_2m_min: [10],
+                    temperature_2m_max: [20],
+                    uv_index_max: [5],
+                    sunrise: [`${time}T07:00`],
+                    sunset: [`${time}T17:00`],
+                    moon_phase: [0.5],
+                    moonrise: [`${time}T22:00`],
+                    moonset: [`${time}T10:00`],
+                    apparent_temperature_min: [8],
+                    apparent_temperature_max: [18],
+                    wind_direction_10m_dominant: [180]
+                }
+            };
+            const result = WeatherCore.normalizeForecast(data, { name: 'Test', latitude: 0, longitude: 0 });
+            assert.equal(result.daily[0].uv_index_max, 5);
+            assert.equal(result.daily[0].sunrise, `${time}T07:00`);
+            assert.equal(result.daily[0].moon_phase, 0.5);
+            assert.equal(result.daily[0].apparent_temperature_min, 8);
+            assert.equal(result.daily[0].wind_direction_10m_dominant, 180);
+        });
+
+        it('handles missing new fields gracefully', () => {
+            const now = new Date();
+            const future = new Date(now.getTime() + 3600000).toISOString();
+            const data = {
+                current: { temperature_2m: 20, weather_code: 0 },
+                hourly: { time: [future], temperature_2m: [22], weather_code: [0] },
+                daily: { time: ['2024-01-15'], weather_code: [0], temperature_2m_min: [10], temperature_2m_max: [20] }
+            };
+            const result = WeatherCore.normalizeForecast(data, { name: 'Test', latitude: 0, longitude: 0 });
+            assert.equal(result.hourly[0].precipitation_probability, undefined);
+            assert.equal(result.daily[0].uv_index_max, undefined);
+        });
+    });
 };

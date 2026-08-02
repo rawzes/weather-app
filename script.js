@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const weatherInfo = document.getElementById('weather-info');
     const weatherEmoji = document.getElementById('weather-emoji');
     const personSVG = document.getElementById('person');
+    const uvBadge = document.getElementById('uv-badge');
+    const sunriseInfo = document.getElementById('sunrise-info');
+    const sunsetInfo = document.getElementById('sunset-info');
     const weatherCard = document.getElementById('weather-card');
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
@@ -137,6 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
             ['Давление', `${Math.round(current.pressure_msl)} гПа`],
             ['Ветер', `${Math.round(current.wind_speed_10m)} км/ч`],
             ['Порывы', `${Math.round(current.wind_gusts_10m)} км/ч`],
+            ['Направление', WeatherCore.describeWindDir(current.wind_direction_10m)],
+            ['Точка росы', `${convertTemp(current.dew_point_2m)}${getTempUnit()}`],
             ['Обновлено', WeatherCore.formatDateTime(current.time)],
             ['Погода', WeatherCore.weatherDescriptions[current.weather_code] || 'Неизвестно'],
             ['Код', current.weather_code]
@@ -165,7 +170,20 @@ document.addEventListener('DOMContentLoaded', () => {
         weatherDescription.textContent = WeatherCore.weatherDescriptions[weatherCode] || 'Погода обновлена';
         currentTemp.textContent = convertTemp(current.temperature_2m);
         currentUnit.textContent = getTempUnit();
-        weatherAdvice.textContent = buildAdvice(current.temperature_2m, weatherCode, current.wind_speed_10m);
+
+        const uvSeverity = WeatherCore.uvAdviceSeverity(current.uv_index);
+        if (uvSeverity) {
+            uvBadge.textContent = `UV ${uvSeverity.level}`;
+            uvBadge.setAttribute('data-level', uvSeverity.level);
+        } else {
+            uvBadge.textContent = 'UV --';
+            uvBadge.removeAttribute('data-level');
+        }
+
+        sunriseInfo.textContent = snapshot.daily?.[0]?.sunrise ? `🌅 ${formatHour(snapshot.daily[0].sunrise)}` : '🌅 --';
+        sunsetInfo.textContent = snapshot.daily?.[0]?.sunset ? `🌇 ${formatHour(snapshot.daily[0].sunset)}` : '🌇 --';
+
+        weatherAdvice.textContent = buildAdvice(current.temperature_2m, weatherCode, current.wind_speed_10m, current.uv_index);
         renderMetrics(current);
         renderHourlyForecast(snapshot.hourly || []);
         renderWeeklyForecast(snapshot.daily || []);
@@ -204,6 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="hourly-time">${formatHour(item.time)}</span>
                 <span class="hourly-emoji">${WeatherCore.weatherEmojis[item.weather_code] || '🌤️'}</span>
                 <span class="hourly-temp">${convertTemp(item.temperature_2m)}${getTempUnit()}</span>
+                ${item.precipitation_probability != null ? `<span class="hourly-precip">${Math.round(item.precipitation_probability)}%</span>` : ''}
+                ${item.wind_direction_10m != null ? `<span class="hourly-wind">${WeatherCore.describeWindDir(item.wind_direction_10m)}</span>` : ''}
             </article>
         `).join('');
     }
@@ -225,47 +245,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const dayName = date.toLocaleDateString('ru-RU', { weekday: 'short' });
             const isToday = date.toDateString() === today;
             const fill = Math.max(18, ((item.temperature_2m_max - minRange) / range) * 100);
+
+            const extras = WeatherCore.parseDailyExtras(item);
+            const extrasHtml = extras.map(ex => `<span>${ex.icon} ${ex.text}</span>`).join('');
+
+            const feelsLikeMin = item.apparent_temperature_min != null ? convertTemp(item.apparent_temperature_min) : null;
+            const feelsLikeMax = item.apparent_temperature_max != null ? convertTemp(item.apparent_temperature_max) : null;
+
             return `
                 <article class="forecast-day ${isToday ? 'forecast-today' : ''}" style="animation-delay:${index * 0.05}s" aria-label="${dayName}, ${WeatherCore.weatherDescriptions[item.weather_code] || 'Неизвестно'}">
                     <span class="forecast-day-name">${isToday ? 'Сегодня' : dayName}</span>
                     <span class="forecast-emoji">${WeatherCore.weatherEmojis[item.weather_code] || '🌤️'}</span>
                     <span class="forecast-temp">${convertTemp(item.temperature_2m_min)} / ${convertTemp(item.temperature_2m_max)}${getTempUnit()}</span>
+                    ${feelsLikeMin != null && feelsLikeMax != null ? `<span class="forecast-feels">Ощущается: ${feelsLikeMin} / ${feelsLikeMax}${getTempUnit()}</span>` : ''}
                     <span class="temp-bar"><span class="temp-bar-fill" style="width:${fill}%"></span></span>
+                    ${extrasHtml ? `<span class="forecast-extras">${extrasHtml}</span>` : ''}
                 </article>
             `;
         }).join('');
-    }
-
-    function normalizeForecast(data, location) {
-        const current = data.current;
-        const hourly = [];
-        const daily = [];
-        const now = new Date();
-        const endOfDay = new Date(now);
-        endOfDay.setHours(23, 59, 59, 999);
-
-        for (let i = 0; i < (data.hourly?.time?.length || 0); i += 1) {
-            const itemTime = new Date(data.hourly.time[i]);
-            if (itemTime >= now && itemTime <= endOfDay) {
-                hourly.push({
-                    time: data.hourly.time[i],
-                    temperature_2m: data.hourly.temperature_2m[i],
-                    weather_code: data.hourly.weather_code[i]
-                });
-            }
-            if (hourly.length >= 12) break;
-        }
-
-        for (let i = 0; i < (data.daily?.time?.length || 0); i += 1) {
-            daily.push({
-                time: data.daily.time[i],
-                weather_code: data.daily.weather_code[i],
-                temperature_2m_min: data.daily.temperature_2m_min[i],
-                temperature_2m_max: data.daily.temperature_2m_max[i]
-            });
-        }
-
-        return { location, current, hourly, daily, savedAt: new Date().toISOString() };
     }
 
     async function fetchWeather(location) {
@@ -279,9 +276,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const params = new URLSearchParams({
             latitude: location.latitude,
             longitude: location.longitude,
-            current: 'temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,pressure_msl,wind_speed_10m,wind_gusts_10m',
-            hourly: 'temperature_2m,weather_code',
-            daily: 'weather_code,temperature_2m_min,temperature_2m_max',
+            current: 'temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,pressure_msl,wind_speed_10m,wind_gusts_10m,dew_point_2m,wind_direction_10m',
+            hourly: 'temperature_2m,weather_code,precipitation_probability,wind_direction_10m,uv_index,dew_point_2m',
+            daily: 'weather_code,temperature_2m_min,temperature_2m_max,uv_index_max,sunrise,sunset,moon_phase,moonrise,moonset,apparent_temperature_min,apparent_temperature_max,wind_direction_10m_dominant',
             timezone: 'auto',
             forecast_days: '7'
         });
@@ -460,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updatePerson(temperature, weatherCode) {
         personSVG.innerHTML = '';
         const ns = 'http://www.w3.org/2000/svg';
-        const isRainy = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(weatherCode);
+        const isRainy = WeatherCore.rainyCodes.includes(weatherCode);
         const coatColor = temperature < 0 ? '#2563eb' : temperature < 10 ? '#3b82f6' : temperature < 20 ? '#7dd3fc' : '#facc15';
         const pantsColor = temperature >= 20 ? '#22c55e' : '#334155';
         const hatColor = temperature < 0 ? '#b91c1c' : temperature < 10 ? '#1d4ed8' : '#ffffff';

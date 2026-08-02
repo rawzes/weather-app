@@ -449,6 +449,54 @@ a:focus-visible {
     line-height: 1.5;
 }
 
+.hero-extras {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.uv-badge {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 650;
+    color: #fff;
+    background: #94a3b8;
+}
+
+.hero-chip {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--chip-bg);
+    color: var(--forecast-text);
+    font-size: 0.82rem;
+    font-weight: 650;
+}
+
+.hourly-precip,
+.hourly-wind {
+    font-size: 0.72rem;
+    color: var(--light-text);
+    font-weight: 650;
+}
+
+.forecast-feels {
+    font-size: 0.72rem;
+    color: var(--light-text);
+    font-weight: 650;
+}
+
+.forecast-extras {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.72rem;
+    color: var(--light-text);
+    font-weight: 650;
+}
+
 .hero-visual {
     display: grid;
     justify-items: center;
