@@ -53,7 +53,9 @@ npx serve .
 
 ## Развёртывание
 
-Проект готов к публикации на **GitHub Pages**. При пуше в ветку `main` автоматически запускается workflow из `.github/workflows/deploy-pages.yml`.
+Проект готов к публикации на **GitHub Pages**. Он уже развёрнут по адресу: https://rawzes.github.io/weather-app/
+
+При пуше в ветку `main` автоматически запускается workflow из `.github/workflows/deploy-pages.yml`.
 
 Также можно развернуть на любом статическом хостинге (Netlify, Vercel, Surge и т.д.), просто указав корень репозитория как корневую директорию.
 
