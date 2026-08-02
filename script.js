@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const weatherAdvice = document.getElementById('weather-advice');
     const weatherInfo = document.getElementById('weather-info');
     const weatherEmoji = document.getElementById('weather-emoji');
-    const personSVG = document.getElementById('person');
+    const personImage = document.getElementById('person');
     const uvBadge = document.getElementById('uv-badge');
     const sunriseInfo = document.getElementById('sunrise-info');
     const sunsetInfo = document.getElementById('sunset-info');
@@ -490,157 +490,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updatePerson(temperature, weatherCode) {
-        personSVG.innerHTML = '';
-        const ns = 'http://www.w3.org/2000/svg';
         const isRainy = WeatherCore.rainyCodes.includes(weatherCode);
         const isSnowy = WeatherCore.snowyCodes.includes(weatherCode);
-        const isHot = temperature >= 28;
-        const isCold = temperature < 10;
-        const isMild = temperature >= 10 && temperature < 20;
+        const photo = isRainy
+            ? { query: 'person,rain,umbrella', lock: 1 }
+            : isSnowy
+                ? { query: 'person,winter,snow', lock: 2 }
+                : temperature < 10
+                    ? { query: 'person,winter,coat', lock: 3 }
+                    : temperature >= 28
+                        ? { query: 'person,summer,sunglasses', lock: 4 }
+                        : { query: 'person,outdoor,weather', lock: 5 };
 
-        const skinColor = '#fde8d0';
-        const skinShadow = '#eec9a3';
-        const hairColor = '#3e2723';
-        const eyeColor = '#1e293b';
-        const mouthColor = '#d87373';
-        const shirtColor = temperature < 0 ? '#1e40af' : temperature < 10 ? '#2563eb' : temperature < 20 ? '#0ea5e9' : temperature < 28 ? '#22c55e' : '#f97316';
-        const pantsColor = temperature >= 20 ? '#475569' : '#1e293b';
-        const shoeColor = '#1e293b';
-        const hatColor = temperature < 0 ? '#7f1d1d' : temperature < 10 ? '#1d4ed8' : '#ffffff';
-        const scarfColor = temperature < 5 ? '#dc2626' : temperature < 10 ? '#2563eb' : '#ef4444';
-        const umbrellaColor = '#38bdf8';
-        const umbrellaHandle = '#854d0e';
+        const nextSrc = `https://loremflickr.com/480/640/${photo.query}?lock=${photo.lock}`;
+        personImage.classList.add('is-loading');
+        personImage.classList.remove('is-unavailable');
+        personImage.alt = t('clothingAdvice');
+        personImage.onload = () => personImage.classList.remove('is-loading');
+        personImage.onerror = () => {
+            personImage.onerror = null;
+            personImage.src = 'icon.svg';
+            personImage.classList.remove('is-loading');
+            personImage.classList.add('is-unavailable');
+        };
 
-        function appendSvg(tag, attributes) {
-            const element = document.createElementNS(ns, tag);
-            Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
-            personSVG.appendChild(element);
-        }
-
-        function path(d, attrs = {}) {
-            appendSvg('path', { d, ...attrs });
-        }
-
-        function ellipse(cx, cy, rx, ry, attrs = {}) {
-            appendSvg('ellipse', { cx, cy, rx, ry, ...attrs });
-        }
-
-        function circle(cx, cy, r, attrs = {}) {
-            appendSvg('circle', { cx, cy, r, ...attrs });
-        }
-
-        function rect(x, y, w, h, attrs = {}) {
-            appendSvg('rect', { x, y, width: w, height: h, ...attrs });
-        }
-
-        const cx = 100;
-        const headY = 42;
-        const bodyTop = 68;
-        const bodyBottom = 160;
-        const legTop = bodyBottom;
-        const legBottom = 235;
-        const groundY = 245;
-
-        ellipse(cx, groundY, 55, 6, { fill: 'rgba(15, 23, 42, 0.12)' });
-
-        if (temperature < 0) {
-            path(`M ${cx - 8} ${legBottom} L ${cx + 8} ${legBottom} L ${cx + 6} ${groundY - 2} L ${cx - 6} ${groundY - 2} Z`, { fill: '#1e3a5f' });
-            path(`M ${cx - 10} ${legBottom + 2} L ${cx + 10} ${legBottom + 2} L ${cx + 8} ${groundY} L ${cx - 8} ${groundY} Z`, { fill: '#2d4a6f' });
-        } else if (temperature < 10) {
-            path(`M ${cx - 8} ${legBottom} L ${cx + 8} ${legBottom} L ${cx + 6} ${groundY - 2} L ${cx - 6} ${groundY - 2} Z`, { fill: shoeColor });
-            path(`M ${cx - 10} ${legBottom + 2} L ${cx + 10} ${legBottom + 2} L ${cx + 8} ${groundY} L ${cx - 8} ${groundY} Z`, { fill: '#2d3748' });
-        } else if (temperature >= 20) {
-            path(`M ${cx - 8} ${legBottom} L ${cx + 8} ${legBottom} L ${cx + 6} ${groundY - 2} L ${cx - 6} ${groundY - 2} Z`, { fill: shoeColor });
-            path(`M ${cx - 10} ${legBottom + 2} L ${cx + 10} ${legBottom + 2} L ${cx + 8} ${groundY} L ${cx - 8} ${groundY} Z`, { fill: '#334155' });
-        } else {
-            path(`M ${cx - 8} ${legBottom} L ${cx + 8} ${legBottom} L ${cx + 6} ${groundY - 2} L ${cx - 6} ${groundY - 2} Z`, { fill: shoeColor });
-            path(`M ${cx - 10} ${legBottom + 2} L ${cx + 10} ${legBottom + 2} L ${cx + 8} ${groundY} L ${cx - 8} ${groundY} Z`, { fill: '#475569' });
-        }
-
-        if (temperature >= 20) {
-            path(`M ${cx - 22} ${legTop} L ${cx - 26} ${legBottom} L ${cx - 6} ${legBottom} L ${cx - 10} ${legTop} Z`, { fill: pantsColor });
-            path(`M ${cx + 22} ${legTop} L ${cx + 26} ${legBottom} L ${cx + 6} ${legBottom} L ${cx + 10} ${legTop} Z`, { fill: pantsColor });
-        } else {
-            path(`M ${cx - 20} ${legTop} L ${cx - 26} ${legBottom} L ${cx - 4} ${legBottom} L ${cx - 8} ${legTop} Z`, { fill: pantsColor });
-            path(`M ${cx + 20} ${legTop} L ${cx + 26} ${legBottom} L ${cx + 4} ${legBottom} L ${cx + 8} ${legTop} Z`, { fill: pantsColor });
-        }
-
-        rect(cx - 3, bodyTop - 2, 6, 10, { rx: 3, fill: skinColor });
-
-        path(`M ${cx - 28} ${bodyTop + 8} Q ${cx - 34} ${bodyTop + 18} ${cx - 32} ${bodyTop + 40} L ${cx - 28} ${bodyTop + 140} L ${cx - 8} ${bodyTop + 140} L ${cx - 12} ${bodyTop + 40} Q ${cx - 14} ${bodyTop + 18} ${cx - 8} ${bodyTop + 8} Z`, { fill: shirtColor });
-        path(`M ${cx + 28} ${bodyTop + 8} Q ${cx + 34} ${bodyTop + 18} ${cx + 32} ${bodyTop + 40} L ${cx + 28} ${bodyTop + 140} L ${cx + 8} ${bodyTop + 140} L ${cx + 12} ${bodyTop + 40} Q ${cx + 14} ${bodyTop + 18} ${cx + 8} ${bodyTop + 8} Z`, { fill: shirtColor });
-
-        path(`M ${cx - 28} ${bodyTop + 135} Q ${cx - 32} ${bodyTop + 148} ${cx - 20} ${bodyTop + 150} L ${cx + 20} ${bodyTop + 150} Q ${cx + 32} ${bodyTop + 148} ${cx + 28} ${bodyTop + 135}`, { stroke: shirtColor, 'stroke-width': 3, fill: 'none', 'stroke-linecap': 'round' });
-
-        if (isCold) {
-            path(`M ${cx - 18} ${bodyTop + 18} L ${cx - 24} ${bodyTop + 28} L ${cx - 18} ${bodyTop + 32} L ${cx - 14} ${bodyTop + 24} Z`, { fill: '#fb7185' });
-            path(`M ${cx + 18} ${bodyTop + 18} L ${cx + 24} ${bodyTop + 28} L ${cx + 18} ${bodyTop + 32} L ${cx + 14} ${bodyTop + 24} Z`, { fill: '#fb7185' });
-            circle(cx - 21, bodyTop + 24, 5, { fill: '#fb7185' });
-            circle(cx + 21, bodyTop + 24, 5, { fill: '#fb7185' });
-        } else if (!isHot) {
-            path(`M ${cx - 16} ${bodyTop + 18} Q ${cx - 26} ${bodyTop + 32} ${cx - 28} ${bodyTop + 50}`, { stroke: shirtColor, 'stroke-width': 7, fill: 'none', 'stroke-linecap': 'round' });
-            path(`M ${cx + 16} ${bodyTop + 18} Q ${cx + 26} ${bodyTop + 32} ${cx + 28} ${bodyTop + 50}`, { stroke: shirtColor, 'stroke-width': 7, fill: 'none', 'stroke-linecap': 'round' });
-        }
-
-        if (isCold) {
-            path(`M ${cx - 28} ${bodyTop + 2} Q ${cx - 30} ${bodyTop - 4} ${cx - 20} ${bodyTop - 2} L ${cx - 12} ${bodyTop + 8} L ${cx - 28} ${bodyTop + 14} Z`, { fill: scarfColor });
-            path(`M ${cx + 28} ${bodyTop + 2} Q ${cx + 30} ${bodyTop - 4} ${cx + 20} ${bodyTop - 2} L ${cx + 12} ${bodyTop + 8} L ${cx + 28} ${bodyTop + 14} Z`, { fill: scarfColor });
-            path(`M ${cx - 8} ${bodyTop - 2} Q ${cx} ${bodyTop + 4} ${cx + 8} ${bodyTop - 2}`, { stroke: scarfColor, 'stroke-width': 4, fill: 'none', 'stroke-linecap': 'round' });
-        }
-
-        if (temperature < 15) {
-            path(`M ${cx - 26} ${bodyTop - 18} Q ${cx - 28} ${bodyTop - 28} ${cx - 10} ${bodyTop - 30} L ${cx + 10} ${bodyTop - 30} Q ${cx + 28} ${bodyTop - 28} ${cx + 26} ${bodyTop - 18} L ${cx + 22} ${bodyTop - 6} L ${cx - 22} ${bodyTop - 6} Z`, { fill: hatColor });
-            if (temperature < 0) {
-                circle(cx, bodyTop - 22, 7, { fill: '#f87171' });
-                circle(cx, bodyTop - 22, 4, { fill: '#fca5a5' });
-            }
-            path(`M ${cx - 22} ${bodyTop - 6} L ${cx - 26} ${bodyTop - 2} L ${cx + 26} ${bodyTop - 2} L ${cx + 22} ${bodyTop - 6} Z`, { fill: hatColor });
-        }
-
-        if (isHot) {
-            rect(cx - 14, headY - 2, 28, 6, { rx: 3, fill: '#1e293b', opacity: '0.85' });
-            rect(cx - 10, headY + 2, 20, 4, { rx: 2, fill: '#1e293b', opacity: '0.75' });
-        }
-
-        ellipse(cx, headY + 2, 20, 24, { fill: skinColor });
-
-        path(`M ${cx - 18} ${headY - 16} Q ${cx - 16} ${headY - 26} ${cx - 8} ${headY - 28} Q ${cx} ${headY - 30} ${cx + 8} ${headY - 28} Q ${cx + 16} ${headY - 26} ${cx + 18} ${headY - 16} Q ${cx + 18} ${headY - 8} ${cx + 16} ${headY - 2} L ${cx - 16} ${headY - 2} Q ${cx - 18} ${headY - 8} ${cx - 18} ${headY - 16} Z`, { fill: hairColor });
-
-        path(`M ${cx - 18} ${headY - 12} Q ${cx - 14} ${headY - 22} ${cx - 4} ${headY - 24}`, { stroke: hairColor, 'stroke-width': 3, fill: 'none', 'stroke-linecap': 'round' });
-        path(`M ${cx + 16} ${headY - 10} Q ${cx + 12} ${headY - 20} ${cx + 4} ${headY - 22}`, { stroke: hairColor, 'stroke-width': 3, fill: 'none', 'stroke-linecap': 'round' });
-
-        ellipse(cx - 7, headY + 2, 4.5, 3.5, { fill: '#ffffff' });
-        ellipse(cx + 7, headY + 2, 4.5, 3.5, { fill: '#ffffff' });
-        ellipse(cx - 7, headY + 3, 2.5, 2.5, { fill: eyeColor });
-        ellipse(cx + 7, headY + 3, 2.5, 2.5, { fill: eyeColor });
-        circle(cx - 6, headY + 2, 1.2, { fill: '#ffffff' });
-        circle(cx + 8, headY + 2, 1.2, { fill: '#ffffff' });
-
-        path(`M ${cx - 10} ${headY - 4} Q ${cx - 6} ${headY - 8} ${cx - 2} ${headY - 5}`, { stroke: hairColor, 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' });
-        path(`M ${cx + 10} ${headY - 4} Q ${cx + 6} ${headY - 8} ${cx + 2} ${headY - 5}`, { stroke: hairColor, 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' });
-
-        path(`M ${cx - 4} ${headY + 8} Q ${cx} ${headY + 10} ${cx + 4} ${headY + 8}`, { stroke: '#c4756a', 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round' });
-        path(`M ${cx - 2} ${headY + 13} Q ${cx} ${headY + 16} ${cx + 2} ${headY + 13}`, { stroke: mouthColor, 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' });
-
-        if (isRainy) {
-            const umbrellaY = bodyTop - 38;
-            path(`M ${cx - 36} ${umbrellaY} Q ${cx} ${umbrellaY - 28} ${cx + 36} ${umbrellaY} Q ${cx + 30} ${umbrellaY + 6} ${cx} ${umbrellaY + 6} Q ${cx - 30} ${umbrellaY + 6} ${cx - 36} ${umbrellaY} Z`, { fill: umbrellaColor, stroke: '#0284c7', 'stroke-width': 1.5 });
-            path(`M ${cx} ${umbrellaY + 6} L ${cx} ${bodyTop - 2}`, { stroke: umbrellaHandle, 'stroke-width': 3, 'stroke-linecap': 'round' });
-            path(`M ${cx - 24} ${umbrellaY + 4} Q ${cx - 22} ${umbrellaY + 12} ${cx - 24} ${umbrellaY + 18}`, { stroke: umbrellaColor, 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round', opacity: '0.8' });
-            path(`M ${cx - 8} ${umbrellaY + 4} Q ${cx - 6} ${umbrellaY + 14} ${cx - 8} ${umbrellaY + 20}`, { stroke: umbrellaColor, 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round', opacity: '0.8' });
-            path(`M ${cx + 8} ${umbrellaY + 4} Q ${cx + 10} ${umbrellaY + 14} ${cx + 8} ${umbrellaY + 20}`, { stroke: umbrellaColor, 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round', opacity: '0.8' });
-            path(`M ${cx + 24} ${umbrellaY + 4} Q ${cx + 26} ${umbrellaY + 12} ${cx + 24} ${umbrellaY + 18}`, { stroke: umbrellaColor, 'stroke-width': 1.5, fill: 'none', 'stroke-linecap': 'round', opacity: '0.8' });
-        }
-
-        if (isSnowy) {
-            const snowY = bodyTop - 30;
-            for (let i = 0; i < 5; i++) {
-                const sx = cx - 30 + i * 15;
-                const sy = snowY + (i % 2) * 12;
-                circle(sx, sy, 2.5, { fill: '#ffffff', opacity: '0.9' });
-            }
-            path(`M ${cx - 20} ${snowY + 30} Q ${cx} ${snowY + 22} ${cx + 20} ${snowY + 30} Q ${cx + 14} ${snowY + 36} ${cx} ${snowY + 36} Q ${cx - 14} ${snowY + 36} ${cx - 20} ${snowY + 30} Z`, { fill: '#ffffff', opacity: '0.85' });
-        }
+        if (personImage.src !== nextSrc) personImage.src = nextSrc;
     }
 
     searchBtn.addEventListener('click', () => searchByCity(searchInput.value.trim()));
