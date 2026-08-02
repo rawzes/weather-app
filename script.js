@@ -179,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
             [t('dewPoint'), `${convertTemp(current.dew_point_2m)}${getTempUnit()}`],
             [t('updated'), WeatherCore.formatDateTime(current.time)],
             [t('weather'), WeatherCore.weatherDescription(current.weather_code)],
-            ['Code', current.weather_code]
         ];
 
         weatherInfo.innerHTML = metrics.map(([label, value]) => `

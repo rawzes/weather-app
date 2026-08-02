@@ -73,7 +73,7 @@ var WeatherCore = (function () {
     const translations = {
         appTitle: { ru: 'Погодное приложение', en: 'Weather app' },
         eyebrow: { ru: 'Погода рядом с вами', en: 'Weather near you' },
-        tagline: { ru: 'Небо, одежда и прогноз в одном экране', en: 'Sky, outfit and forecast in one screen' },
+        tagline: { ru: 'Погода рядом с вами', en: 'Weather near you' },
         themeAuto: { ru: 'Авто', en: 'Auto' },
         themeLight: { ru: 'Светлая', en: 'Light' },
         themeDark: { ru: 'Тёмная', en: 'Dark' },
@@ -99,7 +99,7 @@ var WeatherCore = (function () {
         weeklyUnavailable: { ru: 'Прогноз на неделю недоступен', en: 'Weekly forecast unavailable' },
         weatherUpdated: { ru: 'Погода обновлена', en: 'Weather updated' },
         uvLow: { ru: 'Низкий', en: 'Low' },
-        uvNone: { ru: '--', en: '--' },
+        uvNone: { ru: 'Нет данных', en: 'No data' },
         advicePrefix: { ru: '', en: '' },
         feelsLike: { ru: 'Ощущается как', en: 'Feels like' },
         humidity: { ru: 'Влажность', en: 'Humidity' },
