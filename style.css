@@ -573,18 +573,7 @@ a:focus-visible,
     height: 100%;
     display: block;
     object-fit: cover;
-    object-position: center 22%;
-    transition: opacity 0.2s ease, transform 0.35s ease;
-}
-
-.person-photo.is-loading {
-    opacity: 0.45;
-    transform: scale(1.025);
-}
-
-.person-photo.is-unavailable {
-    object-fit: contain;
-    padding: 42px;
+    object-position: 58% center;
 }
 
 .metrics-grid {
