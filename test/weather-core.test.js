@@ -619,4 +619,133 @@ module.exports = function (WeatherCore, assert, { describe, it }) {
             assert.equal(result.daily[0].uv_index_max, undefined);
         });
     });
+
+    describe('WeatherCore — i18n', () => {
+        it('getLanguage returns ru by default', () => {
+            localStorage.removeItem('weatherApp.lang');
+            assert.equal(WeatherCore.i18n.getLanguage(), 'ru');
+        });
+
+        it('setLanguage persists to localStorage', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(localStorage.getItem('weatherApp.lang'), 'en');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+
+        it('getLanguage returns en after setLanguage', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(WeatherCore.i18n.getLanguage(), 'en');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+
+        it('t returns ru strings by default', () => {
+            WeatherCore.i18n.setLanguage('ru');
+            assert.equal(WeatherCore.i18n.t('appTitle'), 'Погодное приложение');
+        });
+
+        it('t returns en strings after setLanguage', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(WeatherCore.i18n.t('appTitle'), 'Weather app');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+
+        it('locale returns ru-RU for ru', () => {
+            WeatherCore.i18n.setLanguage('ru');
+            assert.equal(WeatherCore.i18n.locale(), 'ru-RU');
+        });
+
+        it('locale returns en-US for en', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(WeatherCore.i18n.locale(), 'en-US');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+
+        it('describeWindDir returns English directions for en', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(WeatherCore.describeWindDir(0), 'N');
+            assert.equal(WeatherCore.describeWindDir(90), 'E');
+            assert.equal(WeatherCore.describeWindDir(180), 'S');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+
+        it('describeWindDir returns Russian directions for ru', () => {
+            WeatherCore.i18n.setLanguage('ru');
+            assert.equal(WeatherCore.describeWindDir(0), 'С');
+            assert.equal(WeatherCore.describeWindDir(90), 'В');
+            assert.equal(WeatherCore.describeWindDir(180), 'Ю');
+        });
+
+        it('uvAdviceSeverity returns English levels for en', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(WeatherCore.uvAdviceSeverity(8).level, 'Very High');
+            assert.equal(WeatherCore.uvAdviceSeverity(6).level, 'High');
+            assert.equal(WeatherCore.uvAdviceSeverity(3).level, 'Moderate');
+            assert.equal(WeatherCore.uvAdviceSeverity(2).level, 'Low');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+
+        it('uvAdviceSeverity returns Russian levels for ru', () => {
+            WeatherCore.i18n.setLanguage('ru');
+            assert.equal(WeatherCore.uvAdviceSeverity(8).level, 'Очень высокий');
+            assert.equal(WeatherCore.uvAdviceSeverity(6).level, 'Высокий');
+            assert.equal(WeatherCore.uvAdviceSeverity(3).level, 'Умеренный');
+            assert.equal(WeatherCore.uvAdviceSeverity(2).level, 'Низкий');
+        });
+
+        it('moonPhaseLabel returns English for en', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(WeatherCore.moonPhaseLabel(0), 'New Moon');
+            assert.equal(WeatherCore.moonPhaseLabel(0.5), 'Full Moon');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+
+        it('moonPhaseLabel returns Russian for ru', () => {
+            WeatherCore.i18n.setLanguage('ru');
+            assert.equal(WeatherCore.moonPhaseLabel(0), 'Новолуние');
+            assert.equal(WeatherCore.moonPhaseLabel(0.5), 'Полнолуние');
+        });
+
+        it('perceivedComfort returns English for en', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(WeatherCore.perceivedComfort(-5, 50, 10), 'Freezing');
+            assert.equal(WeatherCore.perceivedComfort(30, 50, 10), 'Warm');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+
+        it('perceivedComfort returns Russian for ru', () => {
+            WeatherCore.i18n.setLanguage('ru');
+            assert.equal(WeatherCore.perceivedComfort(-5, 50, 10), 'Морозная');
+            assert.equal(WeatherCore.perceivedComfort(30, 50, 10), 'Тёплая');
+        });
+
+        it('describeDewPoint returns English for en', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(WeatherCore.describeDewPoint(-5), 'Very dry');
+            assert.equal(WeatherCore.describeDewPoint(22), 'Very humid');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+
+        it('describeDewPoint returns Russian for ru', () => {
+            WeatherCore.i18n.setLanguage('ru');
+            assert.equal(WeatherCore.describeDewPoint(-5), 'Очень сухо');
+            assert.equal(WeatherCore.describeDewPoint(22), 'Очень влажно');
+        });
+
+        it('buildAdvice returns English for en', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(WeatherCore.buildAdvice(15, 61, 10, 2), 'Take an umbrella or raincoat. Hooded clothing will be useful today.');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+
+        it('buildAdvice returns Russian for ru', () => {
+            WeatherCore.i18n.setLanguage('ru');
+            assert.equal(WeatherCore.buildAdvice(15, 61, 10, 2), 'Возьмите зонт или дождевик. Одежда с капюшоном сегодня будет кстати.');
+        });
+
+        it('t interpolates vars', () => {
+            WeatherCore.i18n.setLanguage('en');
+            assert.equal(WeatherCore.i18n.t('searchNotFound', { s: 'Moscow' }), 'City "Moscow" not found.');
+            WeatherCore.i18n.setLanguage('ru');
+        });
+    });
 };

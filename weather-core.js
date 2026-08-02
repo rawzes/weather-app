@@ -11,7 +11,7 @@ var WeatherCore = (function () {
         80: '🌧️', 81: '🌧️', 82: '🌧️', 95: '⛈️', 96: '⛈️', 99: '⛈️'
     };
 
-    const weatherDescriptions = {
+    const weatherDescriptionsRaw = {
         0: 'Ясно', 1: 'Малооблачно', 2: 'Переменная облачность', 3: 'Пасмурно',
         45: 'Туман', 48: 'Иней и туман', 51: 'Лёгкая морось', 53: 'Морось', 55: 'Сильная морось',
         56: 'Ледяная морось', 57: 'Сильная ледяная морось', 61: 'Небольшой дождь', 63: 'Дождь',
@@ -49,54 +49,236 @@ var WeatherCore = (function () {
         return '🌑';
     }
 
+    const translations = {
+        appTitle: { ru: 'Погодное приложение', en: 'Weather app' },
+        eyebrow: { ru: 'Погода рядом с вами', en: 'Weather near you' },
+        tagline: { ru: 'Небо, одежда и прогноз в одном экране', en: 'Sky, outfit and forecast in one screen' },
+        themeAuto: { ru: 'Авто', en: 'Auto' },
+        themeLight: { ru: 'Светлая', en: 'Light' },
+        themeDark: { ru: 'Тёмная', en: 'Dark' },
+        searchPlaceholder: { ru: 'Найти город...', en: 'Find a city...' },
+        searchBtn: { ru: 'Найти', en: 'Search' },
+        refreshBtn: { ru: 'Обновить', en: 'Refresh' },
+        locationBtn: { ru: 'Моё местоположение', en: 'My location' },
+        favoriteBtn: { ru: 'В избранное', en: 'Favorite' },
+        favoriteBtnActive: { ru: 'В избранном', en: 'Favorited' },
+        favoritesTitle: { ru: 'Избранные', en: 'Favorites' },
+        historyTitle: { ru: 'История', en: 'History' },
+        noFavorites: { ru: 'Нет избранных городов', en: 'No favorite cities' },
+        noHistory: { ru: 'История появится после поиска', en: 'History appears after search' },
+        loading: { ru: 'Загрузка...', en: 'Loading...' },
+        loadingForecast: { ru: 'Загрузка прогноза...', en: 'Loading forecast...' },
+        errorGeneric: { ru: 'Ошибка данных. Попробуйте позже.', en: 'Data error. Please try again later.' },
+        errorForecast: { ru: 'Ошибка прогноза. Проверьте соединение.', en: 'Forecast error. Check your connection.' },
+        errorOffline: { ru: 'Не удалось обновить прогноз. Используем последние сохранённые данные.', en: 'Could not refresh forecast. Using last saved data.' },
+        offlineBanner: { ru: 'Показаны последние сохранённые данные.', en: 'Showing last saved data.' },
+        hourlyTitle: { ru: 'Сегодня по часам', en: 'Hourly forecast' },
+        weeklyTitle: { ru: 'Прогноз на неделю', en: 'Weekly forecast' },
+        hourlyUnavailable: { ru: 'Почасовой прогноз недоступен', en: 'Hourly forecast unavailable' },
+        weeklyUnavailable: { ru: 'Прогноз на неделю недоступен', en: 'Weekly forecast unavailable' },
+        weatherUpdated: { ru: 'Погода обновлена', en: 'Weather updated' },
+        uvLow: { ru: 'Низкий', en: 'Low' },
+        uvNone: { ru: '--', en: '--' },
+        advicePrefix: { ru: '', en: '' },
+        feelsLike: { ru: 'Ощущается как', en: 'Feels like' },
+        humidity: { ru: 'Влажность', en: 'Humidity' },
+        pressure: { ru: 'Давление', en: 'Pressure' },
+        wind: { ru: 'Ветер', en: 'Wind' },
+        gusts: { ru: 'Порывы', en: 'Gusts' },
+        direction: { ru: 'Направление', en: 'Direction' },
+        dewPoint: { ru: 'Точка росы', en: 'Dew point' },
+        updated: { ru: 'Обновлено', en: 'Updated' },
+        weather: { ru: 'Погода', en: 'Weather' },
+        errorLocationIP: { ru: 'Не удалось определить местоположение по IP.', en: 'Could not detect location by IP.' },
+        errorGeolocationBlocked: { ru: 'Геолокация запрещена. Используем определение по IP.', en: 'Geolocation blocked. Falling back to IP location.' },
+        errorGeolocationUnavailable: { ru: 'Местоположение недоступно. Используем определение по IP.', en: 'Location unavailable. Falling back to IP location.' },
+        errorGeolocationTimeout: { ru: 'Геолокация не ответила вовремя. Используем определение по IP.', en: 'Geolocation timed out. Falling back to IP location.' },
+        errorGeolocationNotSupported: { ru: 'Геолокация не поддерживается.', en: 'Geolocation not supported.' },
+        searchingCity: { ru: 'Ищем город: ', en: 'Searching city: ' },
+        searchNotFound: { ru: 'Город "%s" не найден.', en: 'City "%s" not found.' },
+        searchError: { ru: 'Ошибка поиска города "%s".', en: 'Error searching city "%s".' },
+        loadingWeatherFor: { ru: 'Загружаем погоду: ', en: 'Loading weather for: ' },
+        detectingLocation: { ru: 'Определяем ваше местоположение...', en: 'Detecting your location...' },
+        detectingLocationIP: { ru: 'Определяем местоположение по IP...', en: 'Detecting location by IP...' },
+        footerTitle: { ru: 'Weather Companion', en: 'Weather Companion' },
+        footerSubtitle: { ru: 'Разработчик: ', en: 'Developer: ' },
+        footerText: { ru: '© 2026. Минималистичный прогноз с PWA-режимом, историей поиска и offline-кэшем.', en: '© 2026. Minimal forecast with PWA mode, search history and offline cache.' },
+        footerWeatherData: { ru: 'Погодные данные', en: 'Weather data' },
+        footerMapData: { ru: 'Поиск городов', en: 'City search' },
+        tryAnotherQuery: { ru: 'Попробуйте другой запрос', en: 'Try another query' },
+        preparingForecast: { ru: 'Подготовка прогноза', en: 'Preparing forecast' },
+        unknownErrorGeolocation: { ru: 'Неизвестная ошибка геолокации.', en: 'Unknown geolocation error.' },
+        feelsLikeRange: { ru: 'Ощущается: ', en: 'Feels like: ' },
+        today: { ru: 'Сегодня', en: 'Today' },
+        weatherUnknown: { ru: 'Неизвестно', en: 'Unknown' }
+    };
+
+    const moonPhasesRu = {
+        0.03: 'Новолуние', 0.22: 'Молодая луна', 0.28: 'Первая четверть', 0.47: 'Растущая луна',
+        0.53: 'Полнолуние', 0.72: 'Убывающая луна', 0.78: 'Последняя четверть', 0.97: 'Старая луна'
+    };
+    const moonPhasesEn = {
+        0.03: 'New Moon', 0.22: 'Waxing Crescent', 0.28: 'First Quarter', 0.47: 'Waxing Gibbous',
+        0.53: 'Full Moon', 0.72: 'Waning Gibbous', 0.78: 'Last Quarter', 0.97: 'Waning Crescent'
+    };
+
+    const windDirectionsRu = ['С', 'СВ', 'В', 'ЮВ', 'Ю', 'ЮЗ', 'З', 'СЗ'];
+    const windDirectionsEn = ['N', 'NNE', 'E', 'ENE', 'S', 'WSW', 'W', 'NNW'];
+
+    const uvLevelsRu = {
+        0: 'Низкий',
+        3: 'Умеренный',
+        6: 'Высокий',
+        8: 'Очень высокий',
+        11: 'Экстремальный'
+    };
+    const uvLevelsEn = {
+        0: 'Low',
+        3: 'Moderate',
+        6: 'High',
+        8: 'Very High',
+        11: 'Extreme'
+    };
+
+    let currentLang = 'ru';
+
+    function i18nKey(rawKey) {
+        if (rawKey && rawKey.startsWith('i18n:')) return rawKey.slice(5);
+        return rawKey;
+    }
+
+    const i18n = {
+        setLanguage(lang) {
+            if (lang !== 'ru' && lang !== 'en') return;
+            currentLang = lang;
+            try { localStorage.setItem('weatherApp.lang', lang); } catch {}
+        },
+        getLanguage() {
+            try { const v = localStorage.getItem('weatherApp.lang'); if (v === 'ru' || v === 'en') return v; } catch {}
+            return 'ru';
+        },
+        t(key, vars) {
+            const entry = translations[key];
+            if (!entry) return key;
+            let text = entry[currentLang] || entry['ru'] || key;
+            if (vars) {
+                Object.entries(vars).forEach(([k, v]) => {
+                    text = text.replace(`%s`, String(v));
+                });
+            }
+            return text;
+        },
+        locale() {
+            return currentLang === 'en' ? 'en-US' : 'ru-RU';
+        }
+    };
+
     function moonPhaseLabel(phaseFraction) {
         if (phaseFraction === undefined || phaseFraction === null) return '--';
         const p = Number(phaseFraction);
-        if (p < 0.03 || p > 0.97) return 'Новолуние';
-        if (p < 0.22) return 'Молодая луна';
-        if (p < 0.28) return 'Первая четверть';
-        if (p < 0.47) return 'Растущая луна';
-        if (p < 0.53) return 'Полнолуние';
-        if (p < 0.72) return 'Убывающая луна';
-        if (p < 0.78) return 'Последняя четверть';
-        return 'Старая луна';
+        const map = currentLang === 'en' ? moonPhasesEn : moonPhasesRu;
+        const thresholds = Object.keys(map).map(Number).sort((a, b) => a - b);
+        if (p < 0.03 || p > 0.97) return map[0.03];
+        for (const threshold of thresholds) {
+            if (p < threshold) return map[threshold];
+        }
+        return map[0.97];
     }
 
     function describeWindDir(deg) {
         if (deg === undefined || deg === null || Number.isNaN(Number(deg))) return '--';
-        const directions = ['С', 'СВ', 'В', 'ЮВ', 'Ю', 'ЮЗ', 'З', 'СЗ'];
+        const directions = currentLang === 'en' ? windDirectionsEn : windDirectionsRu;
         const index = Math.round(Number(deg) / 45) % 8;
-        return directions[index];
+        return directions[index] || '--';
     }
 
     function uvAdviceSeverity(uvIndex) {
         if (uvIndex === undefined || uvIndex === null || Number.isNaN(Number(uvIndex))) return null;
         const uv = Number(uvIndex);
-        if (uv >= 11) return { level: 'Экстремальный', text: 'Избегайте пребывания на улице. Необходима максимальная защита.' };
-        if (uv >= 8) return { level: 'Очень высокий', text: 'Используйте солнцезащитный крем SPF 50+, головной убор и очки. Ограничьте пребывание на солнце.' };
-        if (uv >= 6) return { level: 'Высокий', text: 'Наденьте головной убор и солнцезащитные очки. Используйте крем.' };
-        if (uv >= 3) return { level: 'Умеренный', text: 'Рекомендуется солнцезащитный крем при долгой прогулке.' };
-        return { level: 'Низкий', text: 'Защита от солнца не требуется.' };
+        const levels = currentLang === 'en' ? uvLevelsEn : uvLevelsRu;
+        const thresholds = Object.keys(levels).map(Number).sort((a, b) => b - a);
+        for (const threshold of thresholds) {
+            if (uv >= threshold) {
+                const level = levels[threshold];
+                const texts = currentLang === 'en' ? {
+                    'Extreme': 'Avoid being outside. Maximum protection required.',
+                    'Very High': 'Use SPF 50+ sunscreen, a hat, and sunglasses. Limit sun exposure.',
+                    'High': 'Wear a hat and sunglasses. Use sunscreen.',
+                    'Moderate': 'Sunscreen is recommended for extended outdoor time.',
+                    'Low': 'Sun protection not required.'
+                } : {
+                    'Экстремальный': 'Избегайте пребывания на улице. Необходима максимальная защита.',
+                    'Очень высокий': 'Используйте солнцезащитный крем SPF 50+, головной убор и очки. Ограничьте пребывание на солнце.',
+                    'Высокий': 'Наденьте головной убор и солнцезащитные очки. Используйте крем.',
+                    'Умеренный': 'Рекомендуется солнцезащитный крем при долгой прогулке.',
+                    'Низкий': 'Защита от солнца не требуется.'
+                };
+                return { level, text: texts[level] };
+            }
+        }
+        return null;
     }
 
     function perceivedComfort(temp, humidity, wind) {
         if (temp === undefined || temp === null || Number.isNaN(Number(temp))) return '--';
         const t = Number(temp);
-        if (t < 0) return 'Морозная';
-        if (t < 10) return 'Холодная';
-        if (t < 20) return 'Прохладная';
-        if (t < 28) return 'Комфортная';
-        return 'Тёплая';
+        const ru = ['Морозная', 'Холодная', 'Прохладная', 'Комфортная', 'Тёплая'];
+        const en = ['Freezing', 'Cold', 'Cool', 'Comfortable', 'Warm'];
+        const labels = currentLang === 'en' ? en : ru;
+        if (t < 0) return labels[0];
+        if (t < 10) return labels[1];
+        if (t < 20) return labels[2];
+        if (t < 28) return labels[3];
+        return labels[4];
     }
 
     function describeDewPoint(dewPoint) {
         if (dewPoint === undefined || dewPoint === null || Number.isNaN(Number(dewPoint))) return '--';
         const dp = Number(dewPoint);
-        if (dp < 0) return 'Очень сухо';
-        if (dp < 10) return 'Сухо';
-        if (dp < 15) return 'Комфортно';
-        if (dp < 20) return 'Влажно';
-        return 'Очень влажно';
+        const ru = ['Очень сухо', 'Сухо', 'Комфортно', 'Влажно', 'Очень влажно'];
+        const en = ['Very dry', 'Dry', 'Comfortable', 'Humid', 'Very humid'];
+        const labels = currentLang === 'en' ? en : ru;
+        if (dp < 0) return labels[0];
+        if (dp < 10) return labels[1];
+        if (dp < 15) return labels[2];
+        if (dp < 20) return labels[3];
+        return labels[4];
+    }
+
+    function buildAdvice(temp, code, windSpeed, uvIndex) {
+        const rainy = rainyCodes.includes(code);
+        const snowy = snowyCodes.includes(code);
+        const stormy = stormyCodes.includes(code);
+        const t = Number(temp);
+        const ws = Number(windSpeed);
+        if (stormy) return currentLang === 'en'
+            ? 'Consider postponing a long walk: thunder, strong wind and sudden precipitation possible.'
+            : 'Лучше отложить долгую прогулку: возможны гроза, сильный ветер и резкие осадки.';
+        if (snowy) return currentLang === 'en'
+            ? 'Warm shoes, hat and non-slip soles needed. It may be snowy outside.'
+            : 'Нужны тёплая обувь, шапка и нескользкая подошва. На улице может быть снежно.';
+        if (rainy) return currentLang === 'en'
+            ? 'Take an umbrella or raincoat. Hooded clothing will be useful today.'
+            : 'Возьмите зонт или дождевик. Одежда с капюшоном сегодня будет кстати.';
+        if (t < 0) return currentLang === 'en'
+            ? 'Very cold: warm jacket, scarf, gloves and hat are essential.'
+            : 'Очень холодно: тёплая куртка, шарф, перчатки и шапка обязательны.';
+        if (t < 10) return currentLang === 'en'
+            ? 'Cool: a jacket, thick pants and scarf will do.'
+            : 'Прохладно: подойдёт куртка, плотные брюки и шарф.';
+        if (t < 20) return ws > 25 ? (currentLang === 'en' ? 'Comfortable but windy. Better take a light jacket.' : 'Комфортно, но ветрено. Лучше взять лёгкую куртку.') : (currentLang === 'en' ? 'Mild weather: a light jacket or sweater is enough.' : 'Погода мягкая: хватит лёгкой куртки или свитера.');
+        if (t > 28) return currentLang === 'en'
+            ? 'Hot: water, a hat and light clothing will help you feel better.'
+            : 'Жарко: вода, головной убор и лёгкая одежда помогут чувствовать себя лучше.';
+
+        const uvSeverity = uvAdviceSeverity(uvIndex);
+        if (uvSeverity && uvSeverity.level !== (currentLang === 'en' ? 'Low' : 'Низкий')) {
+            return uvSeverity.text;
+        }
+
+        return currentLang === 'en'
+            ? 'Great weather for a walk. Light clothing is enough.'
+            : 'Отличная погода для прогулки. Лёгкой одежды достаточно.';
     }
 
     function parseDailyExtras(day) {
@@ -104,7 +286,7 @@ var WeatherCore = (function () {
         if (day.sunrise) items.push({ icon: '🌅', text: formatHour(day.sunrise) });
         if (day.sunset) items.push({ icon: '🌇', text: formatHour(day.sunset) });
         if (day.moon_phase != null) items.push({ icon: moonPhaseEmoji(day.moon_phase), text: moonPhaseLabel(day.moon_phase) });
-        if (day.uv_index_max != null) items.push({ icon: '☀️', text: `UV ${Math.round(day.uv_index_max)}` });
+        if (day.uv_index_max != null) items.push({ icon: '☀️', text: `${currentLang === 'en' ? 'UV' : 'UV'} ${Math.round(day.uv_index_max)}` });
         if (day.wind_direction_10m_dominant != null) items.push({ icon: '🧭', text: describeWindDir(day.wind_direction_10m_dominant) });
         return items;
     }
@@ -138,26 +320,6 @@ var WeatherCore = (function () {
     function shouldUseLightTheme() {
         const hour = new Date().getHours();
         return hour >= 7 && hour < 20;
-    }
-
-    function buildAdvice(temp, code, windSpeed, uvIndex) {
-        const rainy = rainyCodes.includes(code);
-        const snowy = snowyCodes.includes(code);
-        const stormy = stormyCodes.includes(code);
-        if (stormy) return 'Лучше отложить долгую прогулку: возможны гроза, сильный ветер и резкие осадки.';
-        if (snowy) return 'Нужны тёплая обувь, шапка и нескользкая подошва. На улице может быть снежно.';
-        if (rainy) return 'Возьмите зонт или дождевик. Одежда с капюшоном сегодня будет кстати.';
-        if (temp < 0) return 'Очень холодно: тёплая куртка, шарф, перчатки и шапка обязательны.';
-        if (temp < 10) return 'Прохладно: подойдёт куртка, плотные брюки и шарф.';
-        if (temp < 20) return windSpeed > 25 ? 'Комфортно, но ветрено. Лучше взять лёгкую куртку.' : 'Погода мягкая: хватит лёгкой куртки или свитера.';
-        if (temp > 28) return 'Жарко: вода, головной убор и лёгкая одежда помогут чувствовать себя лучше.';
-
-        const uvSeverity = uvAdviceSeverity(uvIndex);
-        if (uvSeverity && uvSeverity.level !== 'Низкий') {
-            return uvSeverity.text;
-        }
-
-        return 'Отличная погода для прогулки. Лёгкой одежды достаточно.';
     }
 
     function normalizeForecast(data, location) {
@@ -208,21 +370,25 @@ var WeatherCore = (function () {
     function formatDateTime(value) {
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) return String(value).replace('T', ' ');
-        return date.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleString(i18n.locale(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
     }
 
     function formatHour(value) {
         const date = new Date(value);
-        return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleTimeString(i18n.locale(), { hour: '2-digit', minute: '2-digit' });
     }
 
     function locationKey(location) {
         return `${Number(location.latitude).toFixed(3)},${Number(location.longitude).toFixed(3)}`;
     }
 
+    function weatherDescription(code) {
+        return weatherDescriptionsRaw[code] || (currentLang === 'en' ? 'Unknown' : 'Неизвестно');
+    }
+
     return {
         weatherEmojis,
-        weatherDescriptions,
+        weatherDescriptions: weatherDescriptionsRaw,
         weatherBodyClasses,
         rainyCodes,
         snowyCodes,
@@ -244,5 +410,7 @@ var WeatherCore = (function () {
         perceivedComfort,
         describeDewPoint,
         parseDailyExtras,
+        weatherDescription,
+        i18n
     };
 })();

@@ -33,6 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
         light: document.getElementById('theme-light-btn'),
         dark: document.getElementById('theme-dark-btn')
     };
+    const langButtons = {
+        ru: document.getElementById('lang-ru-btn'),
+        en: document.getElementById('lang-en-btn')
+    };
 
     const storageKeys = {
         unit: 'weatherApp.unit',
@@ -65,6 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getTempUnit() {
         return WeatherCore.getTempUnit(useCelsius);
+    }
+
+    function t(key, vars) {
+        return WeatherCore.i18n.t(key, vars);
     }
 
     function showElement(element, display = 'block') {
@@ -129,22 +137,49 @@ document.addEventListener('DOMContentLoaded', () => {
         setTheme(themeMode);
     }
 
+    function applyLanguage(lang) {
+        WeatherCore.i18n.setLanguage(lang);
+        const currentLang = WeatherCore.i18n.getLanguage();
+        document.documentElement.lang = currentLang === 'en' ? 'en' : 'ru';
+
+        document.title = t('appTitle');
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (el.tagName === 'INPUT') {
+                el.placeholder = t(key);
+            } else {
+                el.textContent = t(key);
+            }
+        });
+
+        Object.entries(langButtons).forEach(([langCode, button]) => {
+            const isActive = currentLang === langCode;
+            button.classList.toggle('active', isActive);
+            button.setAttribute('aria-pressed', String(isActive));
+        });
+
+        if (currentSnapshot) {
+            renderWeather(currentSnapshot, offlineBanner.style.display !== 'none');
+        }
+    }
+
     function buildAdvice(temp, code, windSpeed) {
         return WeatherCore.buildAdvice(temp, code, windSpeed);
     }
 
     function renderMetrics(current) {
         const metrics = [
-            ['Ощущается как', `${convertTemp(current.apparent_temperature)}${getTempUnit()}`],
-            ['Влажность', `${Math.round(current.relative_humidity_2m)}%`],
-            ['Давление', `${Math.round(current.pressure_msl)} гПа`],
-            ['Ветер', `${Math.round(current.wind_speed_10m)} км/ч`],
-            ['Порывы', `${Math.round(current.wind_gusts_10m)} км/ч`],
-            ['Направление', WeatherCore.describeWindDir(current.wind_direction_10m)],
-            ['Точка росы', `${convertTemp(current.dew_point_2m)}${getTempUnit()}`],
-            ['Обновлено', WeatherCore.formatDateTime(current.time)],
-            ['Погода', WeatherCore.weatherDescriptions[current.weather_code] || 'Неизвестно'],
-            ['Код', current.weather_code]
+            [t('feelsLike'), `${convertTemp(current.apparent_temperature)}${getTempUnit()}`],
+            [t('humidity'), `${Math.round(current.relative_humidity_2m)}%`],
+            [t('pressure'), `${Math.round(current.pressure_msl)} гПа`],
+            [t('wind'), `${Math.round(current.wind_speed_10m)} км/ч`],
+            [t('gusts'), `${Math.round(current.wind_gusts_10m)} км/ч`],
+            [t('direction'), WeatherCore.describeWindDir(current.wind_direction_10m)],
+            [t('dewPoint'), `${convertTemp(current.dew_point_2m)}${getTempUnit()}`],
+            [t('updated'), WeatherCore.formatDateTime(current.time)],
+            [t('weather'), WeatherCore.weatherDescription(current.weather_code)],
+            ['Code', current.weather_code]
         ];
 
         weatherInfo.innerHTML = metrics.map(([label, value]) => `
@@ -167,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const weatherCode = current.weather_code;
         const emoji = WeatherCore.weatherEmojis[weatherCode] || '🌤️';
         locationStatus.textContent = `📍 ${location.name}`;
-        weatherDescription.textContent = WeatherCore.weatherDescriptions[weatherCode] || 'Погода обновлена';
+        weatherDescription.textContent = WeatherCore.weatherDescription(weatherCode);
         currentTemp.textContent = convertTemp(current.temperature_2m);
         currentUnit.textContent = getTempUnit();
 
@@ -176,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
             uvBadge.textContent = `UV ${uvSeverity.level}`;
             uvBadge.setAttribute('data-level', uvSeverity.level);
         } else {
-            uvBadge.textContent = 'UV --';
+            uvBadge.textContent = t('uvNone');
             uvBadge.removeAttribute('data-level');
         }
 
@@ -213,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderHourlyForecast(hourly) {
         if (!hourly.length) {
-            hourlyForecastList.innerHTML = '<div class="chip empty">Почасовой прогноз недоступен</div>';
+            hourlyForecastList.innerHTML = `<div class="chip empty">${t('hourlyUnavailable')}</div>`;
             return;
         }
 
@@ -230,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderWeeklyForecast(daily) {
         if (!daily.length) {
-            weeklyForecastList.innerHTML = '<div class="chip empty">Прогноз на неделю недоступен</div>';
+            weeklyForecastList.innerHTML = `<div class="chip empty">${t('weeklyUnavailable')}</div>`;
             return;
         }
 
@@ -242,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         weeklyForecastList.innerHTML = daily.map((item, index) => {
             const date = new Date(item.time);
-            const dayName = date.toLocaleDateString('ru-RU', { weekday: 'short' });
+            const dayName = date.toLocaleDateString(WeatherCore.i18n.locale(), { weekday: 'short' });
             const isToday = date.toDateString() === today;
             const fill = Math.max(18, ((item.temperature_2m_max - minRange) / range) * 100);
 
@@ -253,11 +288,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const feelsLikeMax = item.apparent_temperature_max != null ? convertTemp(item.apparent_temperature_max) : null;
 
             return `
-                <article class="forecast-day ${isToday ? 'forecast-today' : ''}" style="animation-delay:${index * 0.05}s" aria-label="${dayName}, ${WeatherCore.weatherDescriptions[item.weather_code] || 'Неизвестно'}">
-                    <span class="forecast-day-name">${isToday ? 'Сегодня' : dayName}</span>
+                <article class="forecast-day ${isToday ? 'forecast-today' : ''}" style="animation-delay:${index * 0.05}s" aria-label="${dayName}, ${WeatherCore.weatherDescription(item.weather_code)}">
+                    <span class="forecast-day-name">${isToday ? t('today') : dayName}</span>
                     <span class="forecast-emoji">${WeatherCore.weatherEmojis[item.weather_code] || '🌤️'}</span>
                     <span class="forecast-temp">${convertTemp(item.temperature_2m_min)} / ${convertTemp(item.temperature_2m_max)}${getTempUnit()}</span>
-                    ${feelsLikeMin != null && feelsLikeMax != null ? `<span class="forecast-feels">Ощущается: ${feelsLikeMin} / ${feelsLikeMax}${getTempUnit()}</span>` : ''}
+                    ${feelsLikeMin != null && feelsLikeMax != null ? `<span class="forecast-feels">${t('feelsLikeRange')}${feelsLikeMin} / ${feelsLikeMax}${getTempUnit()}</span>` : ''}
                     <span class="temp-bar"><span class="temp-bar-fill" style="width:${fill}%"></span></span>
                     ${extrasHtml ? `<span class="forecast-extras">${extrasHtml}</span>` : ''}
                 </article>
@@ -284,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         try {
-            locationStatus.textContent = `Загружаем погоду: ${location.name}...`;
+            locationStatus.textContent = `${t('loadingWeatherFor')}${location.name}...`;
             const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
             if (!response.ok) throw new Error('Weather request failed');
             const data = await response.json();
@@ -295,10 +330,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const cachedSnapshot = getStored(storageKeys.lastSnapshot, null);
             if (cachedSnapshot) {
                 renderWeather(cachedSnapshot, true);
-                showError('Не удалось обновить прогноз. Используем последние сохранённые данные.');
+                showError(t('errorOffline'));
             } else {
-                showError('Не удалось получить данные о погоде. Проверьте подключение к интернету.');
-                showForecastError('Прогноз недоступен без соединения.');
+                showError(t('errorGeneric'));
+                showForecastError(t('errorForecast'));
             }
         } finally {
             setLoading(false);
@@ -312,15 +347,15 @@ document.addEventListener('DOMContentLoaded', () => {
         setLoading(true);
         hideError();
         hideElement(offlineBanner);
-        locationStatus.textContent = `Ищем город: ${city}...`;
+        locationStatus.textContent = `${t('searchingCity')}${city}...`;
 
         try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&limit=1&accept-language=ru`);
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&limit=1&accept-language=${WeatherCore.i18n.getLanguage()}`);
             if (!response.ok) throw new Error('Search request failed');
             const data = await response.json();
             if (!data[0]) {
-                showError(`Город "${city}" не найден.`);
-                locationStatus.textContent = 'Попробуйте другой запрос';
+                showError(t('searchNotFound', { s: city }));
+                locationStatus.textContent = t('tryAnotherQuery');
                 return;
             }
             const result = data[0];
@@ -333,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await fetchWeather(location);
         } catch (error) {
             console.error(error);
-            showError(`Ошибка поиска города "${city}".`);
+            showError(t('searchError', { s: city }));
         } finally {
             setLoading(false);
         }
@@ -341,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function reverseGeocode(latitude, longitude) {
         try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=ru`);
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=${WeatherCore.i18n.getLanguage()}`);
             if (!response.ok) throw new Error('Reverse geocoding failed');
             const data = await response.json();
             return data?.address?.city || data?.address?.town || data?.address?.village || data?.address?.state || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
@@ -360,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function getLocationByIP() {
         try {
-            locationStatus.textContent = 'Определяем местоположение по IP...';
+            locationStatus.textContent = t('detectingLocationIP');
             const response = await fetch('https://ipapi.co/json/');
             if (!response.ok) throw new Error('IP location failed');
             const data = await response.json();
@@ -374,6 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await fetchWeather(location);
         } catch (error) {
             console.error(error);
+            showError(t('errorLocationIP'));
             const fallback = { name: 'Москва', latitude: 55.7558, longitude: 37.6176 };
             await fetchWeather(fallback);
         }
@@ -381,11 +417,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleLocationError(error) {
         const messages = {
-            1: 'Геолокация запрещена. Используем определение по IP.',
-            2: 'Местоположение недоступно. Используем определение по IP.',
-            3: 'Геолокация не ответила вовремя. Используем определение по IP.'
+            1: t('errorGeolocationBlocked'),
+            2: t('errorGeolocationUnavailable'),
+            3: t('errorGeolocationTimeout')
         };
-        locationStatus.textContent = messages[error.code] || 'Неизвестная ошибка геолокации.';
+        locationStatus.textContent = messages[error.code] || t('unknownErrorGeolocation');
         getLocationByIP();
     }
 
@@ -402,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(getWeatherByCoords, handleLocationError, { timeout: 9000 });
         } else {
-            locationStatus.textContent = 'Геолокация не поддерживается.';
+            locationStatus.textContent = t('errorGeolocationNotSupported');
             getLocationByIP();
         }
     }
@@ -426,13 +462,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateFavoriteButton() {
         const active = currentLocation && favorites.some(item => WeatherCore.locationKey(item) === WeatherCore.locationKey(currentLocation));
-        favoriteBtn.textContent = active ? 'В избранном' : 'В избранное';
+        favoriteBtn.textContent = active ? t('favoriteBtnActive') : t('favoriteBtn');
         favoriteBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
     }
 
     function renderChips() {
-        renderChipList(favoritesList, favorites, 'Нет избранных городов');
-        renderChipList(historyList, history, 'История появится после поиска');
+        renderChipList(favoritesList, favorites, t('noFavorites'));
+        renderChipList(historyList, history, t('noHistory'));
     }
 
     function renderChipList(container, items, emptyText) {
@@ -559,10 +595,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentSnapshot) renderWeather(currentSnapshot, offlineBanner.style.display !== 'none');
     });
     Object.entries(themeButtons).forEach(([mode, button]) => button.addEventListener('click', () => setTheme(mode)));
+    Object.entries(langButtons).forEach(([langCode, button]) => button.addEventListener('click', () => applyLanguage(langCode)));
 
     updateUnitToggle();
     setTheme(themeMode);
     renderChips();
+    applyLanguage(WeatherCore.i18n.getLanguage());
 
     const cachedSnapshot = getStored(storageKeys.lastSnapshot, null);
     if (cachedSnapshot) renderWeather(cachedSnapshot, true);

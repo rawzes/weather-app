@@ -10,55 +10,63 @@
     <link rel="manifest" href="manifest.webmanifest" />
 </head>
 <body>
+    <a href="#weather-card" class="skip-link">Перейти к погоде</a>
     <main class="container">
         <header class="app-header">
             <div>
-                <p class="eyebrow">Погода рядом с вами</p>
-                <h1>Небо, одежда и прогноз в одном экране</h1>
+                <p class="eyebrow" data-i18n="eyebrow">Погода рядом с вами</p>
+                <h1 data-i18n="tagline">Небо, одежда и прогноз в одном экране</h1>
             </div>
-            <div class="theme-toggle" aria-label="Тема оформления">
-                <button id="theme-auto-btn" class="active" type="button">Авто</button>
-                <button id="theme-light-btn" type="button">Светлая</button>
-                <button id="theme-dark-btn" type="button">Тёмная</button>
+            <div class="theme-lang-group">
+                <div class="theme-toggle" aria-label="Тема оформления">
+                    <button id="theme-auto-btn" class="active" type="button">Авто</button>
+                    <button id="theme-light-btn" type="button">Светлая</button>
+                    <button id="theme-dark-btn" type="button">Тёмная</button>
+                </div>
+                <div class="lang-toggle" aria-label="Язык интерфейса">
+                    <button id="lang-ru-btn" class="active" type="button" aria-pressed="true">RU</button>
+                    <button id="lang-en-btn" type="button" aria-pressed="false">EN</button>
+                </div>
             </div>
         </header>
 
         <section class="control-panel" aria-label="Поиск и настройки">
             <div class="search-container">
+                <label for="search-input" class="sr-only">Найти город</label>
                 <input type="text" id="search-input" placeholder="Найти город..." autocomplete="off" />
-                <button id="search-btn" type="button">Найти</button>
+                <button id="search-btn" type="button" data-i18n="searchBtn">Найти</button>
             </div>
             <div class="quick-actions">
-                <button id="refreshBtn" type="button">Обновить</button>
-                <button id="my-location-btn" type="button">Моё местоположение</button>
-                <button id="favorite-btn" type="button" aria-pressed="false">В избранное</button>
+                <button id="refreshBtn" type="button" data-i18n="refreshBtn">Обновить</button>
+                <button id="my-location-btn" type="button" data-i18n="locationBtn">Моё местоположение</button>
+                <button id="favorite-btn" type="button" aria-pressed="false" data-i18n="favoriteBtn">В избранное</button>
             </div>
             <div class="unit-row">
                 <div class="unit-toggle" aria-label="Единицы температуры">
                     <button id="celsius-btn" class="active" type="button">°C</button>
                     <button id="fahrenheit-btn" type="button">°F</button>
                 </div>
-                <div class="temp-legend" id="temp-legend">
+                <div class="temp-legend" id="temp-legend" role="note" aria-live="polite">
                     <span class="legend-icon">i</span>
                     <span class="legend-text">°F = °C × 9/5 + 32</span>
                 </div>
             </div>
             <div class="chips-section">
                 <div>
-                    <p class="chips-title">Избранные</p>
+                    <p class="chips-title" data-i18n="favoritesTitle">Избранные</p>
                     <div id="favorites-list" class="chips-list"></div>
                 </div>
                 <div>
-                    <p class="chips-title">История</p>
+                    <p class="chips-title" data-i18n="historyTitle">История</p>
                     <div id="history-list" class="chips-list"></div>
                 </div>
             </div>
         </section>
 
         <section class="weather-card" id="weather-card" aria-live="polite">
-            <div id="loading-indicator" class="loading">Загрузка...</div>
-            <div id="error-message" class="error">Ошибка данных. Попробуйте позже.</div>
-            <div id="offline-banner" class="offline-banner">Показаны последние сохранённые данные.</div>
+            <div id="loading-indicator" class="loading" data-i18n="loading">Загрузка...</div>
+            <div id="error-message" class="error" role="alert">Ошибка данных. Попробуйте позже.</div>
+            <div id="offline-banner" class="offline-banner" role="status">Показаны последние сохранённые данные.</div>
 
             <div class="hero-weather">
                 <div class="hero-copy">
@@ -73,10 +81,10 @@
                         <span id="sunrise-info" class="hero-chip">🌅 --</span>
                         <span id="sunset-info" class="hero-chip">🌇 --</span>
                     </div>
-                    <p id="weather-advice" class="weather-advice">Совет появится после загрузки погоды.</p>
+                    <p id="weather-advice" class="weather-advice" data-i18n="preparingForecast">Совет появится после загрузки погоды.</p>
                 </div>
                 <div class="hero-visual">
-                    <div id="weather-emoji" class="weather-emoji">🌤️</div>
+                    <div id="weather-emoji" class="weather-emoji" aria-hidden="true">🌤️</div>
                     <div id="person-container">
                         <svg id="person" width="200" height="280" viewBox="0 0 200 280" class="person-svg" aria-label="Рекомендация по одежде" role="img"></svg>
                     </div>
@@ -88,7 +96,7 @@
 
         <section class="forecast-hourly" aria-labelledby="hourly-title">
             <div class="section-heading">
-                <h2 id="hourly-title">Сегодня по часам</h2>
+                <h2 id="hourly-title" data-i18n="hourlyTitle">Сегодня по часам</h2>
                 <span id="hourly-indicator" class="loading">Загрузка...</span>
             </div>
             <div id="hourly-forecast-list" class="hourly-scroll"></div>
@@ -96,10 +104,10 @@
 
         <section class="forecast-weekly" aria-labelledby="weekly-title">
             <div class="section-heading">
-                <h2 id="weekly-title">Прогноз на неделю</h2>
+                <h2 id="weekly-title" data-i18n="weeklyTitle">Прогноз на неделю</h2>
                 <span id="forecast-indicator" class="loading">Загрузка прогноза...</span>
             </div>
-            <div id="error-forecast" class="error">Ошибка прогноза. Проверьте соединение.</div>
+            <div id="error-forecast" class="error" role="alert">Ошибка прогноза. Проверьте соединение.</div>
             <div class="forecast-grid" id="weekly-forecast-list"></div>
         </section>
     </main>
@@ -108,15 +116,15 @@
         <div class="footer-brand">
             <span class="footer-logo" aria-hidden="true">☁</span>
             <div>
-                <p class="footer-title">Weather Companion</p>
-                <p class="footer-subtitle">Разработчик: <a href="https://t.me/moniister" class="footer-link footer-dev">@moniister</a></p>
+                <p class="footer-title" data-i18n="footerTitle">Weather Companion</p>
+                <p class="footer-subtitle"><span data-i18n="footerSubtitle">Разработчик: </span><a href="https://t.me/moniister" class="footer-link footer-dev">@moniister</a></p>
             </div>
         </div>
         <div class="footer-links">
-            <a href="https://open-meteo.com/" class="footer-link"><span aria-hidden="true">↗</span> Погодные данные</a>
-            <a href="https://www.openstreetmap.org/" class="footer-link"><span aria-hidden="true">⌖</span> Поиск городов</a>
+            <a href="https://open-meteo.com/" class="footer-link"><span aria-hidden="true">↗</span> <span data-i18n="footerWeatherData">Погодные данные</span></a>
+            <a href="https://www.openstreetmap.org/" class="footer-link"><span aria-hidden="true">⌖</span> <span data-i18n="footerMapData">Поиск городов</span></a>
         </div>
-        <p class="footer-text">© 2026. Минималистичный прогноз с PWA-режимом, историей поиска и offline-кэшем.</p>
+        <p class="footer-text" data-i18n="footerText">© 2026. Минималистичный прогноз с PWA-режимом, историей поиска и offline-кэшем.</p>
     </footer>
     
     <script src="weather-core.js"></script>

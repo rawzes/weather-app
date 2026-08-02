@@ -39,6 +39,35 @@
     padding: 0;
 }
 
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    z-index: 1000;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0 0 12px 12px;
+    background: var(--panel-bg);
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
 body {
     min-height: 100vh;
     padding: 28px 18px;
@@ -183,9 +212,17 @@ button:hover {
 
 button:focus-visible,
 input:focus-visible,
-a:focus-visible {
+a:focus-visible,
+.lang-toggle button:focus-visible {
     outline: 3px solid rgba(67, 214, 185, 0.62);
     outline-offset: 3px;
+}
+
+.theme-lang-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
 }
 
 .theme-toggle,
@@ -201,7 +238,6 @@ a:focus-visible {
 
 .theme-toggle {
     flex: 0 0 auto;
-    margin-left: auto;
     align-self: flex-start;
 }
 
@@ -215,9 +251,19 @@ a:focus-visible {
 }
 
 .theme-toggle button.active,
-.unit-toggle button.active {
+.unit-toggle button.active,
+.lang-toggle button.active {
     color: var(--control-text);
     background: var(--control-bg);
+}
+
+.lang-toggle button {
+    padding: 5px 10px;
+    color: var(--page-muted);
+    background: transparent;
+    box-shadow: none;
+    font-size: 0.76rem;
+    border-radius: 999px;
 }
 
 .control-panel,
